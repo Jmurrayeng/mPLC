@@ -75,7 +75,7 @@ bool moveHBot(float deltaX, float deltaY) {
     // Deceleration phase
     for (int i = maxSteps / 2; i < maxSteps; i++) {
       
-      stepSpeed = max(1, stepSpeed - acceleration * stepDistance);
+      stepSpeed = max(acceleration * stepDistance, stepSpeed - acceleration * stepDistance);
       timePerStep = stepDistance / stepSpeed;
 
       digitalWrite(MOTOR_A_STEP_PIN, i < stepsA ? HIGH : LOW);
