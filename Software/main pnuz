@@ -9,8 +9,10 @@ const int Z_SOLENOID_PIN = 15; // Solenoid valve for pneumatic cylinder
 const int SPINDLE_PIN = 16;
 
 // Limit switch pins
-const int X_LIMIT_PIN = 9;
-const int Y_LIMIT_PIN = 10;
+const int X1_LIMIT_PIN = 0;
+const int Y1_LIMIT_PIN = 1;
+const int X2_LIMIT_PIN = 2;
+const int Y2_LIMIT_PIN = 3;
 
 // Motion parameters
 float currentX = 0.0, currentY = 0.0;  // Current position
@@ -20,77 +22,74 @@ float acceleration = 200.0;           // Acceleration in mm/s²
 bool isHomed = false;                 // Homing state
 
 // Stop motion if limit switch is triggered
-void checkLimitSwitches() {
-  if (digitalRead(X_LIMIT_PIN) == LOW || digitalRead(Y_LIMIT_PIN) == LOW) {
-    Serial.println("Limit switch triggered! Stopping motion.");
-    while (true) {
-      delay(100);  // Halt indefinitely (or implement a reset mechanism)
-    }
+bool checkLimitSwitches() {
+  if (digitalRead(X1_LIMIT_PIN) == LOW || digitalRead(Y1_LIMIT_PIN) == LOW || digitalRead(X2_LIMIT_PIN) == LOW|| digitalRead(Y2_LIMIT_PIN) == LOW) {
+    Serial.println("Limit switch triggered!");
+    return false;
   }
+  return true;
 }
 
 // Move H-Bot motors with acceleration and deceleration
-void moveHBot(float deltaX, float deltaY) {
+bool moveHBot(float deltaX, float deltaY) {
   Serial.println("Moving...");
   
-  checkLimitSwitches();
+  if (checkLimitSwitches()){
 
-  int stepsA = deltaX + deltaY;
-  int stepsB = deltaX - deltaY;
+    int stepsA = deltaX + deltaY;
+    int stepsB = deltaX - deltaY;
 
-  bool dirA = (stepsA >= 0);
-  bool dirB = (stepsB >= 0);
+    bool dirA = (stepsA >= 0);
+    bool dirB = (stepsB >= 0);
 
-  digitalWrite(MOTOR_A_DIR_PIN, dirA ? HIGH : LOW);
-  digitalWrite(MOTOR_B_DIR_PIN, dirB ? HIGH : LOW);
+    digitalWrite(MOTOR_A_DIR_PIN, dirA ? HIGH : LOW);
+    digitalWrite(MOTOR_B_DIR_PIN, dirB ? HIGH : LOW);
 
-  stepsA = abs(stepsA);
-  stepsB = abs(stepsB);
+    stepsA = abs(stepsA);
+    stepsB = abs(stepsB);
 
-  int maxSteps = max(stepsA, stepsB);
+    int maxSteps = max(stepsA, stepsB);
 
-  // Convert feed rate from mm/min to mm/s
-  float targetSpeed = feedRate / 60.0;  // mm/s
-  float stepDistance = 1.0 / maxSteps; // Distance per step
-  float stepSpeed = 0.0;               // Current speed
-  float timePerStep = 0.0;             // Time per step (s)
+    // Convert feed rate from mm/min to mm/s
+    float targetSpeed = feedRate / 60.0;  // mm/s
+    float stepDistance = 1.0 / maxSteps; // Distance per step
+    float stepSpeed = 0.0;               // Current speed
+    float timePerStep = 0.0;             // Time per step (s)
 
-  // Acceleration phase
-  for (int i = 0; i < maxSteps / 2; i++) {
-    stepSpeed = min(targetSpeed, stepSpeed + acceleration * stepDistance);
-    timePerStep = stepDistance / stepSpeed;
+    // Acceleration phase
+    for (int i = 0; i < maxSteps / 2; i++) {
+      
+      stepSpeed = min(targetSpeed, stepSpeed + acceleration * stepDistance);
+      timePerStep = stepDistance / stepSpeed;
 
-    digitalWrite(MOTOR_A_STEP_PIN, i < stepsA ? HIGH : LOW);
-    digitalWrite(MOTOR_B_STEP_PIN, i < stepsB ? HIGH : LOW);
+      digitalWrite(MOTOR_A_STEP_PIN, i < stepsA ? HIGH : LOW);
+      digitalWrite(MOTOR_B_STEP_PIN, i < stepsB ? HIGH : LOW);
 
-    delayMicroseconds(timePerStep * 1e6);
+      delayMicroseconds(timePerStep * 1e6);
 
-    digitalWrite(MOTOR_A_STEP_PIN, LOW);
-    digitalWrite(MOTOR_B_STEP_PIN, LOW);
-    delayMicroseconds(timePerStep * 1e6);
+      digitalWrite(MOTOR_A_STEP_PIN, LOW);
+      digitalWrite(MOTOR_B_STEP_PIN, LOW);
+      delayMicroseconds(timePerStep * 1e6);
+    }
+
+    // Deceleration phase
+    for (int i = maxSteps / 2; i < maxSteps; i++) {
+      
+      stepSpeed = max(1, stepSpeed - acceleration * stepDistance);
+      timePerStep = stepDistance / stepSpeed;
+
+      digitalWrite(MOTOR_A_STEP_PIN, i < stepsA ? HIGH : LOW);
+      digitalWrite(MOTOR_B_STEP_PIN, i < stepsB ? HIGH : LOW);
+      delayMicroseconds(timePerStep * 1e6);
+
+      digitalWrite(MOTOR_A_STEP_PIN, LOW);
+      digitalWrite(MOTOR_B_STEP_PIN, LOW);
+      delayMicroseconds(timePerStep * 1e6);
+    }
+    return true;
+  }else{
+    return false;
   }
-
-  // Deceleration phase
-  for (int i = maxSteps / 2; i < maxSteps; i++) {
-    stepSpeed = max(0.0, stepSpeed - acceleration * stepDistance);
-    timePerStep = stepDistance / stepSpeed;
-
-    digitalWrite(MOTOR_A_STEP_PIN, i < stepsA ? HIGH : LOW);
-    digitalWrite(MOTOR_B_STEP_PIN, i < stepsB ? HIGH : LOW);
-
-    delayMicroseconds(timePerStep * 1e6);
-
-    digitalWrite(MOTOR_A_STEP_PIN, LOW);
-    digitalWrite(MOTOR_B_STEP_PIN, LOW);
-    delayMicroseconds(timePerStep * 1e6);
-  }
-  
-  Serial.print("Movement complete. New position: X=");
-  Serial.print(currentX);
-  Serial.print(", Y=");
-  Serial.print(currentY);
-  Serial.print(", Z=");
-  Serial.println(zCylinderExtended ? "1 (Extended)" : "0 (Retracted)");
 }
 
 // Control pneumatic cylinder for Z-axis
@@ -107,9 +106,9 @@ void homeAxes() {
   // Home X and Y
   digitalWrite(MOTOR_A_DIR_PIN, LOW);
   digitalWrite(MOTOR_B_DIR_PIN, LOW);
-  while (digitalRead(X_LIMIT_PIN) == HIGH || digitalRead(Y_LIMIT_PIN) == HIGH) {
-    if (digitalRead(X_LIMIT_PIN) == HIGH) digitalWrite(MOTOR_A_STEP_PIN, HIGH);
-    if (digitalRead(Y_LIMIT_PIN) == HIGH) digitalWrite(MOTOR_B_STEP_PIN, HIGH);
+  while (digitalRead(X1_LIMIT_PIN) == HIGH || digitalRead(Y1_LIMIT_PIN) == HIGH) {
+    if (digitalRead(X1_LIMIT_PIN) == HIGH) digitalWrite(MOTOR_A_STEP_PIN, HIGH);
+    if (digitalRead(Y1_LIMIT_PIN) == HIGH) digitalWrite(MOTOR_B_STEP_PIN, HIGH);
 
     delayMicroseconds(100);
 
@@ -122,8 +121,8 @@ void homeAxes() {
   controlZCylinder(false);
 
   // Reset positions
-  currentX = 0.0;
-  currentY = 0.0;
+  currentX = -10.0;
+  currentY = -10.0;
 
   isHomed = true;
   Serial.println("Homing complete.");
@@ -152,14 +151,24 @@ void parseGCode(String gcode) {
         newZState = (zValue > 0);  // Positive Z = extend, negative/zero Z = retract
       }
 
-      moveHBot(newX - currentX, newY - currentY);
+      if (moveHBot(newX - currentX, newY - currentY)){
+        currentX = newX;
+        currentY = newY;
+        Serial.print("Movement complete. New position: X=");
+        Serial.print(currentX);
+        Serial.print(", Y=");
+        Serial.println(currentY);
+      }else{
+        Serial.println("Movement not complete");
+        isHomed = false;
+      }
+      
 
       if (newZState != zCylinderExtended) {
         controlZCylinder(newZState);
       }
 
-      currentX = newX;
-      currentY = newY;
+      
     } else if (command == 28) {  // G28
       homeAxes();
     } else {
@@ -205,8 +214,10 @@ void setup() {
   pinMode(Z_SOLENOID_PIN, OUTPUT);
   pinMode(SPINDLE_PIN, OUTPUT);
 
-  pinMode(X_LIMIT_PIN, INPUT_PULLUP);
-  pinMode(Y_LIMIT_PIN, INPUT_PULLUP);
+  pinMode(X1_LIMIT_PIN, INPUT_PULLDOWN);
+  pinMode(Y1_LIMIT_PIN, INPUT_PULLDOWN);
+  pinMode(X2_LIMIT_PIN, INPUT_PULLDOWN);
+  pinMode(Y2_LIMIT_PIN, INPUT_PULLDOWN);
 
   // Initialize serial communication
   Serial.begin(115200);
