@@ -1,12 +1,12 @@
 #include <Arduino.h>
 
 // Pin definitions (customize for your setup)
-const int MOTOR_A_STEP_PIN = 2;
-const int MOTOR_A_DIR_PIN = 3;
-const int MOTOR_B_STEP_PIN = 4;
-const int MOTOR_B_DIR_PIN = 5;
-const int Z_SOLENOID_PIN = 6; // Solenoid valve for pneumatic cylinder
-const int SPINDLE_PIN = 8;
+const int MOTOR_A_STEP_PIN = 11;
+const int MOTOR_A_DIR_PIN = 12;
+const int MOTOR_B_STEP_PIN = 13;
+const int MOTOR_B_DIR_PIN = 14;
+const int Z_SOLENOID_PIN = 15; // Solenoid valve for pneumatic cylinder
+const int SPINDLE_PIN = 16;
 
 const int X_LIMIT_PIN = 9;  // X-axis limit switch
 const int Y_LIMIT_PIN = 10; // Y-axis limit switch
@@ -14,7 +14,7 @@ const int Y_LIMIT_PIN = 10; // Y-axis limit switch
 // Motion parameters
 float currentX = 0.0, currentY = 0.0;  // Current position
 bool zCylinderExtended = false;       // Z-axis state (true = extended, false = retracted)
-float feedRate = 1000.0;              // Default feed rate (mm/min)
+float feedRate = 1000.0;              // Default feed rate in mm/min
 bool isHomed = false;                 // Homing state
 
 // Stop motion if limit switch is triggered
@@ -27,7 +27,7 @@ void checkLimitSwitches() {
   }
 }
 
-// Move H-Bot motors
+// Move H-Bot motors with feed rate control
 void moveHBot(float deltaX, float deltaY) {
   checkLimitSwitches();
 
@@ -44,15 +44,19 @@ void moveHBot(float deltaX, float deltaY) {
   stepsB = abs(stepsB);
 
   int maxSteps = max(stepsA, stepsB);
+
+  // Calculate step delay based on feed rate (converted to delay in microseconds)
+  unsigned long stepDelay = (60.0 * 1e6) / (feedRate * maxSteps);  // Feed rate in mm/min
+
   for (int i = 0; i < maxSteps; i++) {
     if (i < stepsA) digitalWrite(MOTOR_A_STEP_PIN, HIGH);
     if (i < stepsB) digitalWrite(MOTOR_B_STEP_PIN, HIGH);
 
-    delayMicroseconds(100);
+    delayMicroseconds(stepDelay);
 
     digitalWrite(MOTOR_A_STEP_PIN, LOW);
     digitalWrite(MOTOR_B_STEP_PIN, LOW);
-    delayMicroseconds(100);
+    delayMicroseconds(stepDelay);
   }
 }
 
@@ -127,6 +131,14 @@ void parseGCode(String gcode) {
       homeAxes();
     } else {
       Serial.println("Error: Unknown G-code command: " + String(command));
+    }
+  } else if (gcode.startsWith("F")) {  // Feed rate
+    float newFeedRate = gcode.substring(1).toFloat();
+    if (newFeedRate > 0) {
+      feedRate = newFeedRate;
+      Serial.println("Feed rate set to " + String(feedRate) + " mm/min.");
+    } else {
+      Serial.println("Error: Invalid feed rate.");
     }
   } else if (gcode.startsWith("M")) {
     int command = gcode.substring(1).toInt();
