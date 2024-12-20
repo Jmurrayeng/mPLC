@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-// Pin definitions (customize for your setup)
+// Pin definitions
 const int MOTOR_A_STEP_PIN = 11;
 const int MOTOR_A_DIR_PIN = 12;
 const int MOTOR_B_STEP_PIN = 13;
@@ -8,13 +8,15 @@ const int MOTOR_B_DIR_PIN = 14;
 const int Z_SOLENOID_PIN = 15; // Solenoid valve for pneumatic cylinder
 const int SPINDLE_PIN = 16;
 
-const int X_LIMIT_PIN = 9;  // X-axis limit switch
-const int Y_LIMIT_PIN = 10; // Y-axis limit switch
+// Limit switch pins
+const int X_LIMIT_PIN = 9;
+const int Y_LIMIT_PIN = 10;
 
 // Motion parameters
 float currentX = 0.0, currentY = 0.0;  // Current position
 bool zCylinderExtended = false;       // Z-axis state (true = extended, false = retracted)
 float feedRate = 1000.0;              // Default feed rate in mm/min
+float acceleration = 200.0;           // Acceleration in mm/s²
 bool isHomed = false;                 // Homing state
 
 // Stop motion if limit switch is triggered
@@ -27,8 +29,10 @@ void checkLimitSwitches() {
   }
 }
 
-// Move H-Bot motors with feed rate control
+// Move H-Bot motors with acceleration and deceleration
 void moveHBot(float deltaX, float deltaY) {
+  Serial.println("Moving...");
+  
   checkLimitSwitches();
 
   int stepsA = deltaX + deltaY;
@@ -45,19 +49,48 @@ void moveHBot(float deltaX, float deltaY) {
 
   int maxSteps = max(stepsA, stepsB);
 
-  // Calculate step delay based on feed rate (converted to delay in microseconds)
-  unsigned long stepDelay = (60.0 * 1e6) / (feedRate * maxSteps);  // Feed rate in mm/min
+  // Convert feed rate from mm/min to mm/s
+  float targetSpeed = feedRate / 60.0;  // mm/s
+  float stepDistance = 1.0 / maxSteps; // Distance per step
+  float stepSpeed = 0.0;               // Current speed
+  float timePerStep = 0.0;             // Time per step (s)
 
-  for (int i = 0; i < maxSteps; i++) {
-    if (i < stepsA) digitalWrite(MOTOR_A_STEP_PIN, HIGH);
-    if (i < stepsB) digitalWrite(MOTOR_B_STEP_PIN, HIGH);
+  // Acceleration phase
+  for (int i = 0; i < maxSteps / 2; i++) {
+    stepSpeed = min(targetSpeed, stepSpeed + acceleration * stepDistance);
+    timePerStep = stepDistance / stepSpeed;
 
-    delayMicroseconds(stepDelay);
+    digitalWrite(MOTOR_A_STEP_PIN, i < stepsA ? HIGH : LOW);
+    digitalWrite(MOTOR_B_STEP_PIN, i < stepsB ? HIGH : LOW);
+
+    delayMicroseconds(timePerStep * 1e6);
 
     digitalWrite(MOTOR_A_STEP_PIN, LOW);
     digitalWrite(MOTOR_B_STEP_PIN, LOW);
-    delayMicroseconds(stepDelay);
+    delayMicroseconds(timePerStep * 1e6);
   }
+
+  // Deceleration phase
+  for (int i = maxSteps / 2; i < maxSteps; i++) {
+    stepSpeed = max(0.0, stepSpeed - acceleration * stepDistance);
+    timePerStep = stepDistance / stepSpeed;
+
+    digitalWrite(MOTOR_A_STEP_PIN, i < stepsA ? HIGH : LOW);
+    digitalWrite(MOTOR_B_STEP_PIN, i < stepsB ? HIGH : LOW);
+
+    delayMicroseconds(timePerStep * 1e6);
+
+    digitalWrite(MOTOR_A_STEP_PIN, LOW);
+    digitalWrite(MOTOR_B_STEP_PIN, LOW);
+    delayMicroseconds(timePerStep * 1e6);
+  }
+  
+  Serial.print("Movement complete. New position: X=");
+  Serial.print(currentX);
+  Serial.print(", Y=");
+  Serial.print(currentY);
+  Serial.print(", Z=");
+  Serial.println(zCylinderExtended ? "1 (Extended)" : "0 (Retracted)");
 }
 
 // Control pneumatic cylinder for Z-axis
@@ -141,9 +174,17 @@ void parseGCode(String gcode) {
       Serial.println("Error: Invalid feed rate.");
     }
   } else if (gcode.startsWith("M")) {
-    int command = gcode.substring(1).toInt();
+    int command = gcode.substring(1, gcode.indexOf(' ')).toInt();
 
-    if (command == 3) {  // M3 - Spindle ON
+    if (command == 204) {  // M204 - Set acceleration
+      float newAcceleration = gcode.substring(gcode.indexOf('S') + 1).toFloat();
+      if (newAcceleration > 0) {
+        acceleration = newAcceleration;
+        Serial.println("Acceleration set to " + String(acceleration) + " mm/s².");
+      } else {
+        Serial.println("Error: Invalid acceleration value.");
+      }
+    } else if (command == 3) {  // M3 - Spindle ON
       digitalWrite(SPINDLE_PIN, HIGH);
     } else if (command == 5) {  // M5 - Spindle OFF
       digitalWrite(SPINDLE_PIN, LOW);
