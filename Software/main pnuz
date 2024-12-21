@@ -15,9 +15,8 @@ const int Y_LIMIT_PIN = 10;
 // Motion parameters
 float currentX = 0.0, currentY = 0.0;  // Current position in mm
 bool zCylinderExtended = false;       // Z-axis state (true = extended, false = retracted)
-float stepsPerMM = 100.0;             // Default steps/mm
-float feedRate = 600.0;               // Default feed rate in mm/min
-float acceleration = 500.0;           // Default acceleration in steps/s²
+float stepsPerMM = 100.0; // Adjust this based on your hardware (steps/mm)
+float feedRate = 600.0;              // Default feed rate in mm/min
 bool isHomed = false;                 // Homing state
 
 // Create AccelStepper objects for motors A and B
@@ -28,8 +27,8 @@ AccelStepper motorB(AccelStepper::DRIVER, MOTOR_B_STEP_PIN, MOTOR_B_DIR_PIN);
 void setupMotors() {
   motorA.setMaxSpeed(2000); // Set max speed (steps/second)
   motorB.setMaxSpeed(2000); 
-  motorA.setAcceleration(acceleration); // Set initial acceleration
-  motorB.setAcceleration(acceleration); 
+  motorA.setAcceleration(500); // Set acceleration (steps/second^2)
+  motorB.setAcceleration(500); 
 }
 
 // Check limit switches and return true if all limits are OK
@@ -46,16 +45,14 @@ bool moveHBot(float deltaX, float deltaY) {
   Serial.println("Moving...");
 
   // Calculate target steps for each motor
-  float motorSpeed = (feedRate / 60) * stepsPerMM;
+
+  float motorSpeed = (feedRate/60)*stepsPerMM;
   int stepsA = (deltaX + deltaY) * stepsPerMM;
   int stepsB = (deltaX - deltaY) * stepsPerMM;
 
-  // Set feed rate and acceleration
+  //set feedrate
   motorA.setMaxSpeed(motorSpeed);
   motorB.setMaxSpeed(motorSpeed);
-  motorA.setAcceleration(acceleration);
-  motorB.setAcceleration(acceleration);
-
   // Set target positions for the motors
   motorA.move(stepsA);
   motorB.move(stepsB);
@@ -134,9 +131,9 @@ void parseGCode(String gcode) {
         newZState = (zValue > 0);  // Positive Z = extend, negative/zero Z = retract
       }
       if (newZState != zCylinderExtended) {
-        controlZCylinder(newZState);
-        Serial.println(newZState ? "Z-axis: Cylinder extended." : "Z-axis: Cylinder retracted.");
-      }
+          controlZCylinder(newZState);
+          Serial.println(newZState ? "Z-axis: Cylinder extended." : "Z-axis: Cylinder retracted.");
+        }
       // Attempt the move
       if (moveHBot(newX - currentX, newY - currentY)) {
         Serial.print("Movement complete. New position: X=");
@@ -148,28 +145,18 @@ void parseGCode(String gcode) {
       }
     } else if (command == 28) {  // G28
       homeAxes();
-    } else if (command == 50) {  // G50 A<acceleration>
-      if (gcode.indexOf('A') != -1) {
-        float newAcceleration = gcode.substring(gcode.indexOf('A') + 1).toFloat();
-        if (newAcceleration > 0) {
-          acceleration = newAcceleration;
-          Serial.println("Acceleration set to " + String(acceleration) + " steps/s².");
-        } else {
-          Serial.println("Error: Invalid acceleration value.");
-        }
-      }
-    } else if (command == 51) {  // G51 S<steps_per_mm>
-      if (gcode.indexOf('S') != -1) {
-        float newStepsPerMM = gcode.substring(gcode.indexOf('S') + 1).toFloat();
-        if (newStepsPerMM > 0) {
-          stepsPerMM = newStepsPerMM;
-          Serial.println("Steps per mm set to " + String(stepsPerMM) + ".");
-        } else {
-          Serial.println("Error: Invalid steps per mm value.");
-        }
-      }
     } else {
       Serial.println("Error: Unknown G-code command: " + String(command));
+    }
+  } else if (gcode.startsWith("F")) {  // Feed rate
+    float newFeedRate = gcode.substring(1).toFloat();
+    if (newFeedRate > 0) {
+      feedRate = newFeedRate;
+      motorA.setMaxSpeed(feedRate / 60.0 * 100); // Convert mm/min to steps/sec
+      motorB.setMaxSpeed(feedRate / 60.0 * 100);
+      Serial.println("Feed rate set to " + String(feedRate) + " mm/min.");
+    } else {
+      Serial.println("Error: Invalid feed rate.");
     }
   } else {
     Serial.println("Error: Invalid command.");
