@@ -132,7 +132,7 @@ void parseGCode(String gcode) {
       }
       if (newZState != zCylinderExtended) {
           controlZCylinder(newZState);
-          Serial.println(extend ? "Z-axis: Cylinder extended." : "Z-axis: Cylinder retracted.");
+          Serial.println(newZState ? "Z-axis: Cylinder extended." : "Z-axis: Cylinder retracted.");
         }
       // Attempt the move
       if (moveHBot(newX - currentX, newY - currentY)) {
