@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include <AccelStepper.h>
 
 // Pin definitions
 const int MOTOR_A_STEP_PIN = 11;
@@ -13,10 +13,22 @@ const int X_LIMIT_PIN = 9;
 const int Y_LIMIT_PIN = 10;
 
 // Motion parameters
-float currentX = 0.0, currentY = 0.0;  // Current position
+float currentX = 0.0, currentY = 0.0;  // Current position in mm
 bool zCylinderExtended = false;       // Z-axis state (true = extended, false = retracted)
-float feedRate = 100.0;              // Default feed rate in mm/min
+float feedRate = 1000.0;              // Default feed rate in mm/min
 bool isHomed = false;                 // Homing state
+
+// Create AccelStepper objects for motors A and B
+AccelStepper motorA(AccelStepper::DRIVER, MOTOR_A_STEP_PIN, MOTOR_A_DIR_PIN);
+AccelStepper motorB(AccelStepper::DRIVER, MOTOR_B_STEP_PIN, MOTOR_B_DIR_PIN);
+
+// Initialize motors
+void setupMotors() {
+  motorA.setMaxSpeed(2000); // Set max speed (steps/second)
+  motorB.setMaxSpeed(2000); 
+  motorA.setAcceleration(500); // Set acceleration (steps/second^2)
+  motorB.setAcceleration(500); 
+}
 
 // Check limit switches and return true if all limits are OK
 bool checkLimitSwitches() {
@@ -27,51 +39,40 @@ bool checkLimitSwitches() {
   return true;
 }
 
-// Simplified moveHBot function (no acceleration control)
+// Simplified moveHBot function using AccelStepper
 bool moveHBot(float deltaX, float deltaY) {
   Serial.println("Moving...");
 
-  // Check limit switches before starting the move
-  if (!checkLimitSwitches()) {
-    return false; // Abort motion if a limit switch is triggered
-  }
+  // Calculate target steps for each motor
+  float stepsPerMM = 100.0; // Adjust this based on your hardware (steps/mm)
+  int stepsA = (deltaX + deltaY) * stepsPerMM;
+  int stepsB = (deltaX - deltaY) * stepsPerMM;
 
-  int stepsA = deltaX + deltaY;
-  int stepsB = deltaX - deltaY;
+  // Set target positions for the motors
+  motorA.move(stepsA);
+  motorB.move(stepsB);
 
-  bool dirA = (stepsA >= 0);
-  bool dirB = (stepsB >= 0);
-
-  digitalWrite(MOTOR_A_DIR_PIN, dirA ? HIGH : LOW);
-  digitalWrite(MOTOR_B_DIR_PIN, dirB ? HIGH : LOW);
-
-  stepsA = abs(stepsA);
-  stepsB = abs(stepsB);
-
-  int maxSteps = max(stepsA, stepsB);
-
-  // Calculate time per step based on feed rate (in mm/min)
-  float targetSpeed = feedRate / 60.0;  // Convert mm/min to mm/s
-  float stepDistance = 1.0 / maxSteps; // Distance per step
-  float timePerStep = stepDistance / targetSpeed; // Time per step in seconds
-
-  for (int i = 0; i < maxSteps; i++) {
-    // Check limit switches during motion
+  // Start motion
+  while (motorA.isRunning() || motorB.isRunning()) {
     if (!checkLimitSwitches()) {
-      Serial.println("Limit switch triggered during motion. Aborting move.");
-      return false;
+      motorA.stop(); // Stop motor A
+      motorB.stop(); // Stop motor B
+      return false;  // Abort motion
     }
-
-    if (i < stepsA) digitalWrite(MOTOR_A_STEP_PIN, HIGH);
-    if (i < stepsB) digitalWrite(MOTOR_B_STEP_PIN, HIGH);
-
-    delayMicroseconds(timePerStep * 1e6);  // Convert seconds to microseconds
-
-    digitalWrite(MOTOR_A_STEP_PIN, LOW);
-    digitalWrite(MOTOR_B_STEP_PIN, LOW);
-
-    delayMicroseconds(timePerStep * 1e6);
+    motorA.run();
+    motorB.run();
   }
+
+  // Update current position
+  currentX += deltaX;
+  currentY += deltaY;
+
+  Serial.print("Movement complete. New position: X=");
+  Serial.print(currentX);
+  Serial.print(", Y=");
+  Serial.print(currentY);
+  Serial.print(", Z=");
+  Serial.println(zCylinderExtended ? "1 (Extended)" : "0 (Retracted)");
 
   return true;
 }
@@ -87,19 +88,17 @@ void controlZCylinder(bool extend) {
 void homeAxes() {
   Serial.println("Homing axes...");
 
-  // Home X and Y
-  digitalWrite(MOTOR_A_DIR_PIN, LOW);
-  digitalWrite(MOTOR_B_DIR_PIN, LOW);
+  // Move motors towards limit switches
+  motorA.setSpeed(-500); // Move towards home
+  motorB.setSpeed(-500);
+
   while (digitalRead(X_LIMIT_PIN) == HIGH || digitalRead(Y_LIMIT_PIN) == HIGH) {
-    if (digitalRead(X_LIMIT_PIN) == HIGH) digitalWrite(MOTOR_A_STEP_PIN, HIGH);
-    if (digitalRead(Y_LIMIT_PIN) == HIGH) digitalWrite(MOTOR_B_STEP_PIN, HIGH);
-
-    delayMicroseconds(100);
-
-    digitalWrite(MOTOR_A_STEP_PIN, LOW);
-    digitalWrite(MOTOR_B_STEP_PIN, LOW);
-    delayMicroseconds(100);
+    if (digitalRead(X_LIMIT_PIN) == HIGH) motorA.runSpeed();
+    if (digitalRead(Y_LIMIT_PIN) == HIGH) motorB.runSpeed();
   }
+
+  motorA.stop();
+  motorB.stop();
 
   // Retract Z-axis to a known state
   controlZCylinder(false);
@@ -137,15 +136,6 @@ void parseGCode(String gcode) {
 
       // Attempt the move
       if (moveHBot(newX - currentX, newY - currentY)) {
-        currentX = newX;
-        currentY = newY;
-        Serial.print("Movement complete. New position: X=");
-        Serial.print(currentX);
-        Serial.print(", Y=");
-        Serial.print(currentY);
-        Serial.print(", Z=");
-        Serial.println(zCylinderExtended ? "1 (Extended)" : "0 (Retracted)");
-        // Update Z-axis state if needed
         if (newZState != zCylinderExtended) {
           controlZCylinder(newZState);
         }
@@ -161,6 +151,8 @@ void parseGCode(String gcode) {
     float newFeedRate = gcode.substring(1).toFloat();
     if (newFeedRate > 0) {
       feedRate = newFeedRate;
+      motorA.setMaxSpeed(feedRate / 60.0 * 100); // Convert mm/min to steps/sec
+      motorB.setMaxSpeed(feedRate / 60.0 * 100);
       Serial.println("Feed rate set to " + String(feedRate) + " mm/min.");
     } else {
       Serial.println("Error: Invalid feed rate.");
@@ -172,10 +164,6 @@ void parseGCode(String gcode) {
 
 void setup() {
   // Initialize pins
-  pinMode(MOTOR_A_STEP_PIN, OUTPUT);
-  pinMode(MOTOR_A_DIR_PIN, OUTPUT);
-  pinMode(MOTOR_B_STEP_PIN, OUTPUT);
-  pinMode(MOTOR_B_DIR_PIN, OUTPUT);
   pinMode(Z_SOLENOID_PIN, OUTPUT);
   pinMode(SPINDLE_PIN, OUTPUT);
 
@@ -185,6 +173,9 @@ void setup() {
   // Initialize serial communication
   Serial.begin(115200);
   Serial.println("H-Bot G-code Interpreter Ready");
+
+  // Initialize motors
+  setupMotors();
 }
 
 void loop() {
