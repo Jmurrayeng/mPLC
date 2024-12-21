@@ -15,7 +15,7 @@ const int Y_LIMIT_PIN = 10;
 // Motion parameters
 float currentX = 0.0, currentY = 0.0;  // Current position
 bool zCylinderExtended = false;       // Z-axis state (true = extended, false = retracted)
-float feedRate = 1000.0;              // Default feed rate in mm/min
+float feedRate = 100.0;              // Default feed rate in mm/min
 bool isHomed = false;                 // Homing state
 
 // Check limit switches and return true if all limits are OK
@@ -72,13 +72,6 @@ bool moveHBot(float deltaX, float deltaY) {
 
     delayMicroseconds(timePerStep * 1e6);
   }
-
-  Serial.print("Movement complete. New position: X=");
-  Serial.print(currentX);
-  Serial.print(", Y=");
-  Serial.print(currentY);
-  Serial.print(", Z=");
-  Serial.println(zCylinderExtended ? "1 (Extended)" : "0 (Retracted)");
 
   return true;
 }
@@ -146,7 +139,12 @@ void parseGCode(String gcode) {
       if (moveHBot(newX - currentX, newY - currentY)) {
         currentX = newX;
         currentY = newY;
-
+        Serial.print("Movement complete. New position: X=");
+        Serial.print(currentX);
+        Serial.print(", Y=");
+        Serial.print(currentY);
+        Serial.print(", Z=");
+        Serial.println(zCylinderExtended ? "1 (Extended)" : "0 (Retracted)");
         // Update Z-axis state if needed
         if (newZState != zCylinderExtended) {
           controlZCylinder(newZState);
