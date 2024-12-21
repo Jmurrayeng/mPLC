@@ -32,6 +32,36 @@ bool checkLimitSwitches() {
   return true;
 }
 
+// Core incremental movement function
+bool moveHBot(float deltaX, float deltaY) {
+  Serial.println("Moving...");
+
+  // Calculate target steps for each motor
+  int stepsA = (deltaX + deltaY) * stepsPerMM;
+  int stepsB = (deltaX - deltaY) * stepsPerMM;
+
+  // Set target positions for the motors
+  motorA.move(stepsA);
+  motorB.move(stepsB);
+
+  // Start motion
+  while (motorA.isRunning() || motorB.isRunning()) {
+    if (!checkLimitSwitches()) {
+      motorA.stop(); // Stop motor A
+      motorB.stop(); // Stop motor B
+      return false;  // Abort motion
+    }
+    motorA.run();
+    motorB.run();
+  }
+
+  // Update current position
+  currentX += deltaX;
+  currentY += deltaY;
+
+  return true;
+}
+
 // Interpolated straight-line movement
 bool moveLinear(float targetX, float targetY) {
   float deltaX = targetX - currentX;
@@ -82,7 +112,7 @@ void executeArc(float startX, float startY, float endX, float endY, float I, flo
     float targetX = centerX + radius * cos(angle);
     float targetY = centerY + radius * sin(angle);
 
-    // Move incrementally
+    // Incremental movement
     if (!moveHBot(targetX - currentX, targetY - currentY)) {
       Serial.println("Error: Motion aborted during arc.");
       return;
