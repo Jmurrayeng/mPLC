@@ -62,14 +62,20 @@ bool moveHBot(float deltaX, float deltaY) {
   return true;
 }
 
-// Interpolated straight-line movement
+// Interpolated straight-line movement (G0/G1)
 bool moveLinear(float targetX, float targetY) {
   float deltaX = targetX - currentX;
   float deltaY = targetY - currentY;
 
   // Calculate total distance and steps
   float distance = sqrt(deltaX * deltaX + deltaY * deltaY);
-  int steps = distance * stepsPerMM; // Total steps based on resolution
+  int steps = round(distance * stepsPerMM); // Total steps, rounded for accuracy
+
+  // Avoid division by zero
+  if (steps == 0) {
+    Serial.println("Error: Zero movement distance.");
+    return true; // No movement needed
+  }
 
   // Calculate incremental movements
   float stepX = deltaX / steps;
@@ -78,10 +84,14 @@ bool moveLinear(float targetX, float targetY) {
   // Move incrementally
   for (int i = 0; i < steps; i++) {
     if (!moveHBot(stepX, stepY)) {
-      Serial.println("Error: Motion aborted during straight line.");
+      Serial.println("Error: Motion aborted during linear movement.");
       return false;
     }
   }
+
+  // Final adjustment to ensure target position
+  currentX = targetX;
+  currentY = targetY;
 
   Serial.println("Linear movement complete.");
   return true;
