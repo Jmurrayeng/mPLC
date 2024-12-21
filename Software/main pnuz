@@ -9,14 +9,13 @@ const int Z_SOLENOID_PIN = 15; // Solenoid valve for pneumatic cylinder
 const int SPINDLE_PIN = 16;
 
 // Limit switch pins
-const int X_LIMIT_PIN = 1;
-const int Y_LIMIT_PIN = 2;
+const int X_LIMIT_PIN = 9;
+const int Y_LIMIT_PIN = 10;
 
 // Motion parameters
 float currentX = 0.0, currentY = 0.0;  // Current position
 bool zCylinderExtended = false;       // Z-axis state (true = extended, false = retracted)
 float feedRate = 1000.0;              // Default feed rate in mm/min
-float acceleration = 200.0;           // Acceleration in mm/s²
 bool isHomed = false;                 // Homing state
 
 // Stop motion if limit switch is triggered
@@ -29,7 +28,7 @@ void checkLimitSwitches() {
   }
 }
 
-// Move H-Bot motors with dynamic acceleration and deceleration
+// Simplified moveHBot function (no acceleration control)
 void moveHBot(float deltaX, float deltaY) {
   Serial.println("Moving...");
 
@@ -49,180 +48,7 @@ void moveHBot(float deltaX, float deltaY) {
 
   int maxSteps = max(stepsA, stepsB);
 
-  // Convert feed rate from mm/min to mm/s
-  float targetSpeed = feedRate / 60.0;  // mm/s
+  // Calculate time per step based on feed rate (in mm/min)
+  float targetSpeed = feedRate / 60.0;  // Convert mm/min to mm/s
   float stepDistance = 1.0 / maxSteps; // Distance per step
-  float stepSpeed = 0.0;               // Current speed
-  float timePerStep = 0.0;             // Time per step (s)
-  float minSpeed = 1.0;                // Minimum safe speed (mm/s)
-
-  int currentStep = 0;                 // Tracks progress
-  bool decelerating = false;
-
-  while (currentStep < maxSteps) {
-    // Calculate remaining steps and determine if deceleration should start
-    int stepsRemaining = maxSteps - currentStep;
-    float decelDistance = pow(stepSpeed, 2) / (2.0 * acceleration);  // d = v^2 / 2a
-
-    if (!decelerating && stepsRemaining * stepDistance <= decelDistance) {
-      decelerating = true;
-    }
-
-    // Adjust speed based on acceleration or deceleration
-    if (decelerating) {
-      stepSpeed = max(minSpeed, stepSpeed - acceleration * stepDistance);
-    } else {
-      stepSpeed = min(targetSpeed, stepSpeed + acceleration * stepDistance);
-    }
-
-    timePerStep = stepDistance / stepSpeed; // Time per step in seconds
-
-    // Perform a single step
-    if (currentStep < stepsA) digitalWrite(MOTOR_A_STEP_PIN, HIGH);
-    if (currentStep < stepsB) digitalWrite(MOTOR_B_STEP_PIN, HIGH);
-
-    delayMicroseconds(timePerStep * 1e6);
-
-    digitalWrite(MOTOR_A_STEP_PIN, LOW);
-    digitalWrite(MOTOR_B_STEP_PIN, LOW);
-
-    delayMicroseconds(timePerStep * 1e6);
-
-    currentStep++;
-  }
-
-  Serial.print("Movement complete. New position: X=");
-  Serial.print(currentX);
-  Serial.print(", Y=");
-  Serial.print(currentY);
-  Serial.print(", Z=");
-  Serial.println(zCylinderExtended ? "1 (Extended)" : "0 (Retracted)");
-}
-
-// Control pneumatic cylinder for Z-axis
-void controlZCylinder(bool extend) {
-  zCylinderExtended = extend;
-  digitalWrite(Z_SOLENOID_PIN, extend ? HIGH : LOW);
-  Serial.println(extend ? "Z-axis: Cylinder extended." : "Z-axis: Cylinder retracted.");
-}
-
-// Perform homing (G28)
-void homeAxes() {
-  Serial.println("Homing axes...");
-
-  // Home X and Y
-  digitalWrite(MOTOR_A_DIR_PIN, LOW);
-  digitalWrite(MOTOR_B_DIR_PIN, LOW);
-  while (digitalRead(X_LIMIT_PIN) == HIGH || digitalRead(Y_LIMIT_PIN) == HIGH) {
-    if (digitalRead(X_LIMIT_PIN) == HIGH) digitalWrite(MOTOR_A_STEP_PIN, HIGH);
-    if (digitalRead(Y_LIMIT_PIN) == HIGH) digitalWrite(MOTOR_B_STEP_PIN, HIGH);
-
-    delayMicroseconds(100);
-
-    digitalWrite(MOTOR_A_STEP_PIN, LOW);
-    digitalWrite(MOTOR_B_STEP_PIN, LOW);
-    delayMicroseconds(100);
-  }
-
-  // Retract Z-axis to a known state
-  controlZCylinder(false);
-
-  // Reset positions
-  currentX = 0.0;
-  currentY = 0.0;
-
-  isHomed = true;
-  Serial.println("Homing complete.");
-}
-
-// Parse G-code
-void parseGCode(String gcode) {
-  gcode.trim();
-
-  if (gcode.startsWith("G")) {
-    int command = gcode.substring(1, gcode.indexOf(' ')).toInt();
-
-    if (command == 0 || command == 1) {  // G0 or G1
-      if (!isHomed) {
-        Serial.println("Error: Machine not homed. Use G28 to home axes.");
-        return;
-      }
-
-      float newX = currentX, newY = currentY;
-      bool newZState = zCylinderExtended;  // Keep current state by default
-
-      if (gcode.indexOf('X') != -1) newX = gcode.substring(gcode.indexOf('X') + 1).toFloat();
-      if (gcode.indexOf('Y') != -1) newY = gcode.substring(gcode.indexOf('Y') + 1).toFloat();
-      if (gcode.indexOf('Z') != -1) {
-        float zValue = gcode.substring(gcode.indexOf('Z') + 1).toFloat();
-        newZState = (zValue > 0);  // Positive Z = extend, negative/zero Z = retract
-      }
-
-      moveHBot(newX - currentX, newY - currentY);
-
-      if (newZState != zCylinderExtended) {
-        controlZCylinder(newZState);
-      }
-
-      currentX = newX;
-      currentY = newY;
-    } else if (command == 28) {  // G28
-      homeAxes();
-    } else {
-      Serial.println("Error: Unknown G-code command: " + String(command));
-    }
-  } else if (gcode.startsWith("F")) {  // Feed rate
-    float newFeedRate = gcode.substring(1).toFloat();
-    if (newFeedRate > 0) {
-      feedRate = newFeedRate;
-      Serial.println("Feed rate set to " + String(feedRate) + " mm/min.");
-    } else {
-      Serial.println("Error: Invalid feed rate.");
-    }
-  } else if (gcode.startsWith("M")) {
-    int command = gcode.substring(1, gcode.indexOf(' ')).toInt();
-
-    if (command == 204) {  // M204 - Set acceleration
-      float newAcceleration = gcode.substring(gcode.indexOf('S') + 1).toFloat();
-      if (newAcceleration > 0) {
-        acceleration = newAcceleration;
-        Serial.println("Acceleration set to " + String(acceleration) + " mm/s².");
-      } else {
-        Serial.println("Error: Invalid acceleration value.");
-      }
-    } else if (command == 3) {  // M3 - Spindle ON
-      digitalWrite(SPINDLE_PIN, HIGH);
-    } else if (command == 5) {  // M5 - Spindle OFF
-      digitalWrite(SPINDLE_PIN, LOW);
-    } else {
-      Serial.println("Error: Unknown M-code command: " + String(command));
-    }
-  } else {
-    Serial.println("Error: Invalid command.");
-  }
-}
-
-void setup() {
-  // Initialize pins
-  pinMode(MOTOR_A_STEP_PIN, OUTPUT);
-  pinMode(MOTOR_A_DIR_PIN, OUTPUT);
-  pinMode(MOTOR_B_STEP_PIN, OUTPUT);
-  pinMode(MOTOR_B_DIR_PIN, OUTPUT);
-  pinMode(Z_SOLENOID_PIN, OUTPUT);
-  pinMode(SPINDLE_PIN, OUTPUT);
-
-  pinMode(X_LIMIT_PIN, INPUT_PULLUP);
-  pinMode(Y_LIMIT_PIN, INPUT_PULLUP);
-
-  // Initialize serial communication
-  Serial.begin(115200);
-  Serial.println("H-Bot G-code Interpreter Ready");
-}
-
-void loop() {
-  // Check for incoming serial data
-  if (Serial.available()) {
-    String gcode = Serial.readStringUntil('\n');
-    parseGCode(gcode);
-  }
-}
+  float timePerStep = stepDistance / targetSpeed; // Time per
