@@ -15,7 +15,7 @@ const int Y_LIMIT_PIN = 10;
 // Motion parameters
 float currentX = 0.0, currentY = 0.0;  // Current position in mm
 bool zCylinderExtended = false;       // Z-axis state (true = extended, false = retracted)
-float stepsPerMM = 100.0; // Adjust this based on your hardware (steps/mm)
+float stepsPerMM = 158.0; // Adjust this based on your hardware (steps/mm)
 float feedRate = 10.0;              // Default feed rate in steps/sec
 bool isHomed = false;                 // Homing state
 
