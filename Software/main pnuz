@@ -16,20 +16,22 @@ const int Y_LIMIT_PIN = 10;
 float currentX = 0.0, currentY = 0.0;  // Current position in mm
 bool zCylinderExtended = false;       // Z-axis state (true = extended, false = retracted)
 float stepsPerMM = 100.0; // Adjust this based on your hardware (steps/mm)
-float feedRate = 600.0;              // Default feed rate in mm/min
+float feedRate = 10.0;              // Default feed rate in steps/sec
 bool isHomed = false;                 // Homing state
+
+
+
+
+
 
 // Create AccelStepper objects for motors A and B
 AccelStepper motorA(AccelStepper::DRIVER, MOTOR_A_STEP_PIN, MOTOR_A_DIR_PIN);
 AccelStepper motorB(AccelStepper::DRIVER, MOTOR_B_STEP_PIN, MOTOR_B_DIR_PIN);
 
-// Initialize motors
-void setupMotors() {
-  motorA.setMaxSpeed(2000); // Set max speed (steps/second)
-  motorB.setMaxSpeed(2000); 
-  motorA.setAcceleration(500); // Set acceleration (steps/second^2)
-  motorB.setAcceleration(500); 
-}
+
+
+
+
 
 // Check limit switches and return true if all limits are OK
 bool checkLimitSwitches() {
@@ -40,19 +42,18 @@ bool checkLimitSwitches() {
   return true;
 }
 
+
+
+
+
+
 // Simplified moveHBot function using AccelStepper
 bool moveHBot(float deltaX, float deltaY) {
   Serial.println("Moving...");
 
   // Calculate target steps for each motor
-
-  float motorSpeed = (feedRate/60)*stepsPerMM;
   int stepsA = (deltaX + deltaY) * stepsPerMM;
   int stepsB = (deltaX - deltaY) * stepsPerMM;
-
-  //set feedrate
-  motorA.setMaxSpeed(motorSpeed);
-  motorB.setMaxSpeed(motorSpeed);
   // Set target positions for the motors
   motorA.move(stepsA);
   motorB.move(stepsB);
@@ -75,11 +76,21 @@ bool moveHBot(float deltaX, float deltaY) {
   return true;
 }
 
+
+
+
+
+
 // Control pneumatic cylinder for Z-axis
 void controlZCylinder(bool extend) {
   zCylinderExtended = extend;
   digitalWrite(Z_SOLENOID_PIN, extend ? HIGH : LOW);
 }
+
+
+
+
+
 
 // Perform homing (G28)
 void homeAxes() {
@@ -107,6 +118,11 @@ void homeAxes() {
   isHomed = true;
   Serial.println("Homing complete.");
 }
+
+
+
+
+
 
 // Parse G-code
 void parseGCode(String gcode) {
@@ -152,8 +168,8 @@ void parseGCode(String gcode) {
     float newFeedRate = gcode.substring(1).toFloat();
     if (newFeedRate > 0) {
       feedRate = newFeedRate;
-      motorA.setMaxSpeed(feedRate / 60.0 * 100); // Convert mm/min to steps/sec
-      motorB.setMaxSpeed(feedRate / 60.0 * 100);
+      motorA.setMaxSpeed(feedRate / 60.0 * stepsPerMM); // Convert mm/min to steps/sec
+      motorB.setMaxSpeed(feedRate / 60.0 * stepsPerMM);
       Serial.println("Feed rate set to " + String(feedRate) + " mm/min.");
     } else {
       Serial.println("Error: Invalid feed rate.");
@@ -162,6 +178,11 @@ void parseGCode(String gcode) {
     Serial.println("Error: Invalid command.");
   }
 }
+
+
+
+
+
 
 void setup() {
   // Initialize pins
@@ -176,7 +197,10 @@ void setup() {
   Serial.println("H-Bot G-code Interpreter Ready");
 
   // Initialize motors
-  setupMotors();
+  motorA.setMaxSpeed(2000); // Set max speed (steps/second)
+  motorB.setMaxSpeed(2000); 
+  motorA.setAcceleration(500); // Set acceleration (steps/second^2)
+  motorB.setAcceleration(500);
 }
 
 void loop() {
