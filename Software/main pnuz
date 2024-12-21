@@ -15,7 +15,8 @@ const int Y_LIMIT_PIN = 10;
 // Motion parameters
 float currentX = 0.0, currentY = 0.0;  // Current position in mm
 bool zCylinderExtended = false;       // Z-axis state (true = extended, false = retracted)
-float feedRate = 1000.0;              // Default feed rate in mm/min
+float stepsPerMM = 100.0; // Adjust this based on your hardware (steps/mm)
+float feedRate = 60.0;              // Default feed rate in mm/min
 bool isHomed = false;                 // Homing state
 
 // Create AccelStepper objects for motors A and B
@@ -32,7 +33,7 @@ void setupMotors() {
 
 // Check limit switches and return true if all limits are OK
 bool checkLimitSwitches() {
-  if (digitalRead(X_LIMIT_PIN) == LOW || digitalRead(Y_LIMIT_PIN) == LOW) {
+  if (digitalRead(X_LIMIT_PIN) == HIGH || digitalRead(Y_LIMIT_PIN) == HIGH) {
     Serial.println("Limit switch triggered! Motion aborted.");
     return false;
   }
@@ -44,10 +45,14 @@ bool moveHBot(float deltaX, float deltaY) {
   Serial.println("Moving...");
 
   // Calculate target steps for each motor
-  float stepsPerMM = 100.0; // Adjust this based on your hardware (steps/mm)
+
+  float motorSpeed = (feedRate/60)*stepsPerMM;
   int stepsA = (deltaX + deltaY) * stepsPerMM;
   int stepsB = (deltaX - deltaY) * stepsPerMM;
 
+  //set feedrate
+  motorA.setMaxSpeed(motorSpeed);
+  motorB.setMaxSpeed(motorSpeed);
   // Set target positions for the motors
   motorA.move(stepsA);
   motorB.move(stepsB);
@@ -67,13 +72,6 @@ bool moveHBot(float deltaX, float deltaY) {
   currentX += deltaX;
   currentY += deltaY;
 
-  Serial.print("Movement complete. New position: X=");
-  Serial.print(currentX);
-  Serial.print(", Y=");
-  Serial.print(currentY);
-  Serial.print(", Z=");
-  Serial.println(zCylinderExtended ? "1 (Extended)" : "0 (Retracted)");
-
   return true;
 }
 
@@ -81,7 +79,6 @@ bool moveHBot(float deltaX, float deltaY) {
 void controlZCylinder(bool extend) {
   zCylinderExtended = extend;
   digitalWrite(Z_SOLENOID_PIN, extend ? HIGH : LOW);
-  Serial.println(extend ? "Z-axis: Cylinder extended." : "Z-axis: Cylinder retracted.");
 }
 
 // Perform homing (G28)
@@ -89,8 +86,8 @@ void homeAxes() {
   Serial.println("Homing axes...");
 
   // Move motors towards limit switches
-  motorA.setSpeed(-500); // Move towards home
-  motorB.setSpeed(-500);
+  motorA.setSpeed(-100); // Move towards home
+  motorB.setSpeed(-100);
 
   while (digitalRead(X_LIMIT_PIN) == HIGH || digitalRead(Y_LIMIT_PIN) == HIGH) {
     if (digitalRead(X_LIMIT_PIN) == HIGH) motorA.runSpeed();
@@ -133,12 +130,16 @@ void parseGCode(String gcode) {
         float zValue = gcode.substring(gcode.indexOf('Z') + 1).toFloat();
         newZState = (zValue > 0);  // Positive Z = extend, negative/zero Z = retract
       }
-
+      if (newZState != zCylinderExtended) {
+          controlZCylinder(newZState);
+          Serial.println(extend ? "Z-axis: Cylinder extended." : "Z-axis: Cylinder retracted.");
+        }
       // Attempt the move
       if (moveHBot(newX - currentX, newY - currentY)) {
-        if (newZState != zCylinderExtended) {
-          controlZCylinder(newZState);
-        }
+        Serial.print("Movement complete. New position: X=");
+        Serial.print(currentX);
+        Serial.print(", Y=");
+        Serial.println(currentY);
       } else {
         Serial.println("Error: Motion aborted due to limit switch.");
       }
