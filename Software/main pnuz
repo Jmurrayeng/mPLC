@@ -18,21 +18,23 @@ bool zCylinderExtended = false;       // Z-axis state (true = extended, false = 
 float feedRate = 1000.0;              // Default feed rate in mm/min
 bool isHomed = false;                 // Homing state
 
-// Stop motion if limit switch is triggered
-void checkLimitSwitches() {
+// Check limit switches and return true if all limits are OK
+bool checkLimitSwitches() {
   if (digitalRead(X_LIMIT_PIN) == LOW || digitalRead(Y_LIMIT_PIN) == LOW) {
-    Serial.println("Limit switch triggered! Stopping motion.");
-    while (true) {
-      delay(100);  // Halt indefinitely (or implement a reset mechanism)
-    }
+    Serial.println("Limit switch triggered! Motion aborted.");
+    return false;
   }
+  return true;
 }
 
 // Simplified moveHBot function (no acceleration control)
-void moveHBot(float deltaX, float deltaY) {
+bool moveHBot(float deltaX, float deltaY) {
   Serial.println("Moving...");
 
-  checkLimitSwitches();
+  // Check limit switches before starting the move
+  if (!checkLimitSwitches()) {
+    return false; // Abort motion if a limit switch is triggered
+  }
 
   int stepsA = deltaX + deltaY;
   int stepsB = deltaX - deltaY;
@@ -54,6 +56,12 @@ void moveHBot(float deltaX, float deltaY) {
   float timePerStep = stepDistance / targetSpeed; // Time per step in seconds
 
   for (int i = 0; i < maxSteps; i++) {
+    // Check limit switches during motion
+    if (!checkLimitSwitches()) {
+      Serial.println("Limit switch triggered during motion. Aborting move.");
+      return false;
+    }
+
     if (i < stepsA) digitalWrite(MOTOR_A_STEP_PIN, HIGH);
     if (i < stepsB) digitalWrite(MOTOR_B_STEP_PIN, HIGH);
 
@@ -71,6 +79,8 @@ void moveHBot(float deltaX, float deltaY) {
   Serial.print(currentY);
   Serial.print(", Z=");
   Serial.println(zCylinderExtended ? "1 (Extended)" : "0 (Retracted)");
+
+  return true;
 }
 
 // Control pneumatic cylinder for Z-axis
@@ -132,14 +142,18 @@ void parseGCode(String gcode) {
         newZState = (zValue > 0);  // Positive Z = extend, negative/zero Z = retract
       }
 
-      moveHBot(newX - currentX, newY - currentY);
+      // Attempt the move
+      if (moveHBot(newX - currentX, newY - currentY)) {
+        currentX = newX;
+        currentY = newY;
 
-      if (newZState != zCylinderExtended) {
-        controlZCylinder(newZState);
+        // Update Z-axis state if needed
+        if (newZState != zCylinderExtended) {
+          controlZCylinder(newZState);
+        }
+      } else {
+        Serial.println("Error: Motion aborted due to limit switch.");
       }
-
-      currentX = newX;
-      currentY = newY;
     } else if (command == 28) {  // G28
       homeAxes();
     } else {
