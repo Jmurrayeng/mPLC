@@ -1,1 +1,3 @@
+minimally viable cnc drilling machine
 
+uses two stepper motors (with external drivers) in a Hbot motor configuration. Z and spindle are on/off only
