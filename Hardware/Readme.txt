@@ -8,4 +8,4 @@ The 4 ADC (gpio 26 to 29) are suitable for 0-10V
 
 The remaining 4 gpio are taken to the programming/expansion header along with serial wire debug
 
-Production files suitable for upload to JLC pcb
+
