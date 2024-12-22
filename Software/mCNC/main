@@ -9,8 +9,8 @@ const int Z_SOLENOID_PIN = 15; // Solenoid valve for pneumatic cylinder
 const int SPINDLE_PIN = 16;
 
 // Limit switch pins
-const int X_LIMIT_PIN = 9;
-const int Y_LIMIT_PIN = 10;
+const int X_LIMIT_PIN = 1;
+const int Y_LIMIT_PIN = 2;
 
 // Motion parameters
 float currentX = 0.0, currentY = 0.0;  // Current position in mm
@@ -35,7 +35,7 @@ AccelStepper motorB(AccelStepper::DRIVER, MOTOR_B_STEP_PIN, MOTOR_B_DIR_PIN);
 
 // Check limit switches and return true if all limits are OK
 bool checkLimitSwitches() {
-  if (digitalRead(X_LIMIT_PIN) == HIGH || digitalRead(Y_LIMIT_PIN) == HIGH) {
+  if (digitalRead(X_LIMIT_PIN) == LOW || digitalRead(Y_LIMIT_PIN) == LOW) {
     Serial.println("Limit switch triggered! Motion aborted.");
     return false;
   }
