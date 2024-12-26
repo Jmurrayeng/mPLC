@@ -6,8 +6,8 @@
 	(paper "A4")
 	(lib_symbols)
 	(sheet
-		(at 41.91 118.11)
-		(size 38.1 31.75)
+		(at 153.67 39.37)
+		(size 30.48 20.32)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -18,7 +18,7 @@
 		)
 		(uuid "5adf4286-3a66-489b-94b0-83b9b20004ae")
 		(property "Sheetname" "Analog"
-			(at 41.91 117.3984 0)
+			(at 153.67 38.6584 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -27,7 +27,7 @@
 			)
 		)
 		(property "Sheetfile" "Analog.kicad_sch"
-			(at 41.91 150.4446 0)
+			(at 153.67 60.2746 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -36,7 +36,7 @@
 			)
 		)
 		(instances
-			(project "CNC"
+			(project "mPLC"
 				(path "/9ed7c920-cc63-4d6b-a8e8-76de1b6d60db"
 					(page "6")
 				)
@@ -44,8 +44,8 @@
 		)
 	)
 	(sheet
-		(at 172.72 48.26)
-		(size 46.99 27.94)
+		(at 113.03 39.37)
+		(size 33.02 20.32)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -56,7 +56,7 @@
 		)
 		(uuid "62fd79bd-7f9f-4fb6-88b1-667983a1c7f6")
 		(property "Sheetname" "IO"
-			(at 172.72 47.5484 0)
+			(at 113.03 38.6584 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -65,7 +65,7 @@
 			)
 		)
 		(property "Sheetfile" "IO.kicad_sch"
-			(at 172.72 76.7846 0)
+			(at 113.03 60.2746 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -74,7 +74,7 @@
 			)
 		)
 		(instances
-			(project "CNC"
+			(project "mPLC"
 				(path "/9ed7c920-cc63-4d6b-a8e8-76de1b6d60db"
 					(page "4")
 				)
@@ -83,7 +83,7 @@
 	)
 	(sheet
 		(at 29.21 39.37)
-		(size 46.99 36.83)
+		(size 33.02 20.32)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -103,7 +103,7 @@
 			)
 		)
 		(property "Sheetfile" "PUSB.kicad_sch"
-			(at 29.21 76.7846 0)
+			(at 29.21 60.2746 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -112,7 +112,7 @@
 			)
 		)
 		(instances
-			(project "CNC"
+			(project "mPLC"
 				(path "/9ed7c920-cc63-4d6b-a8e8-76de1b6d60db"
 					(page "2")
 				)
@@ -120,8 +120,8 @@
 		)
 	)
 	(sheet
-		(at 95.25 44.45)
-		(size 46.99 27.94)
+		(at 69.85 39.37)
+		(size 34.29 20.32)
 		(fields_autoplaced yes)
 		(stroke
 			(width 0.1524)
@@ -132,7 +132,7 @@
 		)
 		(uuid "b2eeaefb-3112-4548-99d5-8d8f49f5b8a8")
 		(property "Sheetname" "MCU"
-			(at 95.25 43.7384 0)
+			(at 69.85 38.6584 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -141,7 +141,7 @@
 			)
 		)
 		(property "Sheetfile" "MCU.kicad_sch"
-			(at 95.25 72.9746 0)
+			(at 69.85 60.2746 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -150,7 +150,7 @@
 			)
 		)
 		(instances
-			(project "CNC"
+			(project "mPLC"
 				(path "/9ed7c920-cc63-4d6b-a8e8-76de1b6d60db"
 					(page "3")
 				)

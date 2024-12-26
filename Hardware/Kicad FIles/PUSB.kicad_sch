@@ -4417,6 +4417,210 @@
 				)
 			)
 		)
+		(symbol "JLCPCB-Variable-Resistors:Fuse,Resettable,1.5A"
+			(pin_numbers hide)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "F"
+				(at 1.778 0.834 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left)
+				)
+			)
+			(property "Value" "1.5A"
+				(at 1.778 -1.2122 0)
+				(effects
+					(font
+						(size 0.8 0.8)
+					)
+					(justify left)
+				)
+			)
+			(property "Footprint" "JLCPCB-Kicad-Footprints:F_1206"
+				(at -1.778 0 90)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/2202132100_prosemi-SRF1206P150_C2838983.pdf"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "6V 1.5A 100A 3A 1206 Resettable Fuses ROHS"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "LCSC" "C2838983"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Stock" "412"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Price" "0.064USD"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Process" "SMT"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Minimum Qty" "5"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Attrition Qty" "2"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Class" "Preferred Component"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Category" "TVS/Fuse/Board Level Protection,Resettable Fuses"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Manufacturer" "prosemi"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Part" "SRF1206P150"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "F_*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "Fuse,Resettable,1.5A_0_1"
+				(rectangle
+					(start -1.016 2.54)
+					(end 1.016 -2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "Fuse,Resettable,1.5A_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 3.81)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 3.81)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "Wago 2601-3104:2601-3104"
 			(pin_names
 				(offset 0.254)
@@ -6100,7 +6304,7 @@
 		(uuid "0b30e2ae-d9b8-4e5c-a380-d1df92e8f783")
 	)
 	(junction
-		(at 71.12 130.81)
+		(at 74.93 130.81)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "0fa0deb1-b88b-4b4d-974a-8bc5015cc37b")
@@ -6124,6 +6328,12 @@
 		(uuid "1601e1c0-d101-43e4-99ca-cfb2d22a37f0")
 	)
 	(junction
+		(at 57.15 118.11)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "234a721b-ea3f-46f0-b230-221adfcce63d")
+	)
+	(junction
 		(at 46.99 128.27)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -6142,7 +6352,7 @@
 		(uuid "2b6cb1b5-de7f-45b1-9de3-161752035c97")
 	)
 	(junction
-		(at 62.23 118.11)
+		(at 66.04 118.11)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "301a36b7-7291-475a-bc57-a734bf6e010b")
@@ -6190,7 +6400,7 @@
 		(uuid "4cb699ed-d267-4f05-8e95-d895948c8c85")
 	)
 	(junction
-		(at 71.12 118.11)
+		(at 74.93 118.11)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "5095b103-f7b1-473c-8113-3840d9c3da9c")
@@ -6298,7 +6508,7 @@
 		(uuid "9688c7b9-b260-48f7-af36-670bf1e00b8d")
 	)
 	(junction
-		(at 62.23 130.81)
+		(at 66.04 130.81)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "a0d27bfd-dc69-4c5d-9b3d-8fb771e9feca")
@@ -6310,7 +6520,7 @@
 		(uuid "a4f566d2-850c-42bd-97a5-7dc2c68bf54f")
 	)
 	(junction
-		(at 54.61 172.72)
+		(at 50.8 172.72)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "ad586aff-d42a-4d61-b9ee-1f3f1c5b4db7")
@@ -6404,6 +6614,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "efa7450a-f536-4850-88a0-d198c7316b0b")
+	)
+	(junction
+		(at 57.15 130.81)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "f2279910-ed9e-41f2-a8d8-c92a735973ff")
 	)
 	(junction
 		(at 171.45 130.81)
@@ -6579,7 +6795,7 @@
 	)
 	(wire
 		(pts
-			(xy 63.5 152.4) (xy 63.5 157.48)
+			(xy 63.5 153.67) (xy 63.5 157.48)
 		)
 		(stroke
 			(width 0)
@@ -6599,7 +6815,17 @@
 	)
 	(wire
 		(pts
-			(xy 71.12 130.81) (xy 92.71 130.81)
+			(xy 57.15 118.11) (xy 66.04 118.11)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1d1c2ff7-12ee-455f-a038-e6de0b720f17")
+	)
+	(wire
+		(pts
+			(xy 74.93 130.81) (xy 92.71 130.81)
 		)
 		(stroke
 			(width 0)
@@ -6619,7 +6845,7 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 172.72) (xy 54.61 172.72)
+			(xy 46.99 172.72) (xy 50.8 172.72)
 		)
 		(stroke
 			(width 0)
@@ -6656,6 +6882,16 @@
 			(type default)
 		)
 		(uuid "23b7d6f6-0104-4c78-8e3c-9899547770d5")
+	)
+	(wire
+		(pts
+			(xy 57.15 130.81) (xy 66.04 130.81)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "25e80cdb-fe98-4e5d-84d0-0bce2345d3ad")
 	)
 	(wire
 		(pts
@@ -6719,6 +6955,16 @@
 	)
 	(wire
 		(pts
+			(xy 46.99 157.48) (xy 63.5 157.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3201d171-8714-4d1d-8460-fab62877183a")
+	)
+	(wire
+		(pts
 			(xy 248.92 59.69) (xy 248.92 71.12)
 		)
 		(stroke
@@ -6746,16 +6992,6 @@
 			(type default)
 		)
 		(uuid "3f34bea5-d886-44b4-a841-94f158af445a")
-	)
-	(wire
-		(pts
-			(xy 63.5 157.48) (xy 46.99 157.48)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3f56b167-847d-4719-863c-00054a82eefc")
 	)
 	(wire
 		(pts
@@ -6819,7 +7055,7 @@
 	)
 	(wire
 		(pts
-			(xy 71.12 118.11) (xy 71.12 121.92)
+			(xy 74.93 118.11) (xy 74.93 121.92)
 		)
 		(stroke
 			(width 0)
@@ -6849,16 +7085,6 @@
 	)
 	(wire
 		(pts
-			(xy 63.5 167.64) (xy 46.99 167.64)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "50159334-0976-4efb-91ed-3be8a47d9f7c")
-	)
-	(wire
-		(pts
 			(xy 248.92 71.12) (xy 242.57 71.12)
 		)
 		(stroke
@@ -6879,7 +7105,7 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 162.56) (xy 54.61 162.56)
+			(xy 46.99 162.56) (xy 50.8 162.56)
 		)
 		(stroke
 			(width 0)
@@ -6929,7 +7155,7 @@
 	)
 	(wire
 		(pts
-			(xy 71.12 118.11) (xy 62.23 118.11)
+			(xy 74.93 118.11) (xy 66.04 118.11)
 		)
 		(stroke
 			(width 0)
@@ -6969,7 +7195,7 @@
 	)
 	(wire
 		(pts
-			(xy 54.61 162.56) (xy 54.61 172.72)
+			(xy 50.8 162.56) (xy 50.8 172.72)
 		)
 		(stroke
 			(width 0)
@@ -7049,7 +7275,7 @@
 	)
 	(wire
 		(pts
-			(xy 71.12 129.54) (xy 71.12 130.81)
+			(xy 74.93 129.54) (xy 74.93 130.81)
 		)
 		(stroke
 			(width 0)
@@ -7139,7 +7365,7 @@
 	)
 	(wire
 		(pts
-			(xy 132.08 120.65) (xy 140.97 120.65)
+			(xy 134.62 120.65) (xy 140.97 120.65)
 		)
 		(stroke
 			(width 0)
@@ -7219,6 +7445,16 @@
 	)
 	(wire
 		(pts
+			(xy 57.15 129.54) (xy 57.15 130.81)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a0f250f8-d388-4142-85e5-125eed095212")
+	)
+	(wire
+		(pts
 			(xy 238.76 59.69) (xy 248.92 59.69)
 		)
 		(stroke
@@ -7259,7 +7495,7 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 130.81) (xy 62.23 130.81)
+			(xy 46.99 130.81) (xy 57.15 130.81)
 		)
 		(stroke
 			(width 0)
@@ -7299,7 +7535,7 @@
 	)
 	(wire
 		(pts
-			(xy 62.23 130.81) (xy 71.12 130.81)
+			(xy 66.04 130.81) (xy 74.93 130.81)
 		)
 		(stroke
 			(width 0)
@@ -7309,7 +7545,7 @@
 	)
 	(wire
 		(pts
-			(xy 62.23 129.54) (xy 62.23 130.81)
+			(xy 66.04 129.54) (xy 66.04 130.81)
 		)
 		(stroke
 			(width 0)
@@ -7326,6 +7562,16 @@
 			(type default)
 		)
 		(uuid "ac27dd8a-e57f-48c2-af22-d529c055253d")
+	)
+	(wire
+		(pts
+			(xy 46.99 167.64) (xy 63.5 167.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "af25a3c4-9101-4916-adb7-82db50e0bc6d")
 	)
 	(wire
 		(pts
@@ -7379,6 +7625,16 @@
 	)
 	(wire
 		(pts
+			(xy 57.15 118.11) (xy 57.15 121.92)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b90a656e-2b5a-4d0c-9393-a2e7d1db0345")
+	)
+	(wire
+		(pts
 			(xy 234.95 140.97) (xy 248.92 140.97)
 		)
 		(stroke
@@ -7429,7 +7685,7 @@
 	)
 	(wire
 		(pts
-			(xy 46.99 118.11) (xy 62.23 118.11)
+			(xy 46.99 118.11) (xy 49.53 118.11)
 		)
 		(stroke
 			(width 0)
@@ -7439,7 +7695,7 @@
 	)
 	(wire
 		(pts
-			(xy 63.5 162.56) (xy 63.5 167.64)
+			(xy 63.5 163.83) (xy 63.5 167.64)
 		)
 		(stroke
 			(width 0)
@@ -7519,7 +7775,7 @@
 	)
 	(wire
 		(pts
-			(xy 121.92 120.65) (xy 124.46 120.65)
+			(xy 121.92 120.65) (xy 127 120.65)
 		)
 		(stroke
 			(width 0)
@@ -7629,7 +7885,7 @@
 	)
 	(wire
 		(pts
-			(xy 54.61 172.72) (xy 54.61 176.53)
+			(xy 50.8 172.72) (xy 50.8 176.53)
 		)
 		(stroke
 			(width 0)
@@ -7699,7 +7955,7 @@
 	)
 	(wire
 		(pts
-			(xy 82.55 118.11) (xy 71.12 118.11)
+			(xy 82.55 118.11) (xy 74.93 118.11)
 		)
 		(stroke
 			(width 0)
@@ -7719,7 +7975,7 @@
 	)
 	(wire
 		(pts
-			(xy 62.23 118.11) (xy 62.23 121.92)
+			(xy 66.04 118.11) (xy 66.04 121.92)
 		)
 		(stroke
 			(width 0)
@@ -8365,6 +8621,166 @@
 			(project "CNC"
 				(path "/9ed7c920-cc63-4d6b-a8e8-76de1b6d60db/a4e9d124-2373-4474-8430-74f903cafd1c"
 					(reference "C6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "JLCPCB-Diodes:Schottky,SS56")
+		(at 57.15 125.73 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "33c1fdc5-df22-4aee-b944-d14c8fa4614d")
+		(property "Reference" "D12"
+			(at 59.69 124.1424 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "SS56"
+			(at 59.69 126.6825 0)
+			(effects
+				(font
+					(size 0.8 0.8)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "JLCPCB-Kicad-Footprints:D_SMC"
+			(at 58.928 125.73 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/2110191430_YFW-SS56_C2898934.pdf"
+			(at 57.15 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "60V Independent Type 700mV@5A 5A SMC Schottky Diodes ROHS"
+			(at 57.15 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C2898934"
+			(at 57.15 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Stock" "3896"
+			(at 57.15 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Price" "0.081USD"
+			(at 57.15 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Process" "SMT"
+			(at 57.15 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Minimum Qty" "2"
+			(at 57.15 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Attrition Qty" "0"
+			(at 57.15 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Class" "Preferred Component"
+			(at 57.15 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Category" "Diodes,Schottky Barrier Diodes (SBD)"
+			(at 57.15 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "YFW"
+			(at 57.15 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part" "SS56"
+			(at 57.15 125.73 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "74d7ddaf-dd01-491f-a33a-5976c635901a")
+		)
+		(pin "2"
+			(uuid "86045453-50fd-4925-848a-74d0431117ce")
+		)
+		(instances
+			(project "mPLC"
+				(path "/9ed7c920-cc63-4d6b-a8e8-76de1b6d60db/a4e9d124-2373-4474-8430-74f903cafd1c"
+					(reference "D12")
 					(unit 1)
 				)
 			)
@@ -10151,6 +10567,164 @@
 		)
 	)
 	(symbol
+		(lib_id "JLCPCB-Variable-Resistors:Fuse,Resettable,1.5A")
+		(at 53.34 118.11 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6a2c46f2-0256-4248-9c2d-ab8819da0747")
+		(property "Reference" "F1"
+			(at 53.34 111.76 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1.5A"
+			(at 53.34 114.3 90)
+			(effects
+				(font
+					(size 0.8 0.8)
+				)
+			)
+		)
+		(property "Footprint" "JLCPCB-Kicad-Footprints:F_1206"
+			(at 53.34 119.888 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/2202132100_prosemi-SRF1206P150_C2838983.pdf"
+			(at 53.34 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "6V 1.5A 100A 3A 1206 Resettable Fuses ROHS"
+			(at 53.34 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C2838983"
+			(at 53.34 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Stock" "412"
+			(at 53.34 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Price" "0.064USD"
+			(at 53.34 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Process" "SMT"
+			(at 53.34 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Minimum Qty" "5"
+			(at 53.34 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Attrition Qty" "2"
+			(at 53.34 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Class" "Preferred Component"
+			(at 53.34 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Category" "TVS/Fuse/Board Level Protection,Resettable Fuses"
+			(at 53.34 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer" "prosemi"
+			(at 53.34 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Part" "SRF1206P150"
+			(at 53.34 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "f0513d4d-91ec-4b10-adc5-8d43cb813f54")
+		)
+		(pin "1"
+			(uuid "890285db-300c-4733-be7d-e1692be616b1")
+		)
+		(instances
+			(project ""
+				(path "/9ed7c920-cc63-4d6b-a8e8-76de1b6d60db/a4e9d124-2373-4474-8430-74f903cafd1c"
+					(reference "F1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "JLCPCB-Resistors:0805,1.4kΩ")
 		(at 107.95 140.97 90)
 		(unit 1)
@@ -10311,7 +10885,7 @@
 	)
 	(symbol
 		(lib_id "power:+5V")
-		(at 63.5 162.56 0)
+		(at 63.5 163.83 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -10320,7 +10894,7 @@
 		(fields_autoplaced yes)
 		(uuid "7b01d5d9-74d5-47b8-a3d9-dbff306b1a31")
 		(property "Reference" "#PWR012"
-			(at 63.5 166.37 0)
+			(at 63.5 167.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10329,7 +10903,7 @@
 			)
 		)
 		(property "Value" "+5V"
-			(at 63.5 157.48 0)
+			(at 63.5 158.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10337,7 +10911,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 63.5 162.56 0)
+			(at 63.5 163.83 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10346,7 +10920,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 63.5 162.56 0)
+			(at 63.5 163.83 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10355,7 +10929,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 63.5 162.56 0)
+			(at 63.5 163.83 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11292,7 +11866,7 @@
 	(symbol
 		(lib_name "GND_1")
 		(lib_id "power:GND")
-		(at 54.61 176.53 0)
+		(at 50.8 176.53 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -11301,7 +11875,7 @@
 		(fields_autoplaced yes)
 		(uuid "a41614fb-32d4-4129-9769-fd55f3775405")
 		(property "Reference" "#PWR013"
-			(at 54.61 182.88 0)
+			(at 50.8 182.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11310,7 +11884,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 54.61 181.61 0)
+			(at 50.8 181.61 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11318,7 +11892,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 54.61 176.53 0)
+			(at 50.8 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11327,7 +11901,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 54.61 176.53 0)
+			(at 50.8 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -11336,7 +11910,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 54.61 176.53 0)
+			(at 50.8 176.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12338,7 +12912,7 @@
 	)
 	(symbol
 		(lib_id "power:+10V")
-		(at 63.5 152.4 0)
+		(at 63.5 153.67 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -12347,7 +12921,7 @@
 		(fields_autoplaced yes)
 		(uuid "dc183234-6cf9-488d-ad0d-a5f75a2ba1ea")
 		(property "Reference" "#PWR011"
-			(at 63.5 156.21 0)
+			(at 63.5 157.48 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12356,7 +12930,7 @@
 			)
 		)
 		(property "Value" "+10V"
-			(at 63.5 147.32 0)
+			(at 63.5 148.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12364,7 +12938,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 63.5 152.4 0)
+			(at 63.5 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12373,7 +12947,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 63.5 152.4 0)
+			(at 63.5 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12382,7 +12956,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+10V\""
-			(at 63.5 152.4 0)
+			(at 63.5 153.67 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12599,7 +13173,7 @@
 	)
 	(symbol
 		(lib_id "JLCPCB-Capacitors:0805,10uF,(2)")
-		(at 71.12 125.73 0)
+		(at 74.93 125.73 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -12608,7 +13182,7 @@
 		(fields_autoplaced yes)
 		(uuid "e112e4fc-0316-4521-b275-cf5c6912b6bd")
 		(property "Reference" "C5"
-			(at 73.66 123.1899 0)
+			(at 77.47 123.1899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12617,7 +13191,7 @@
 			)
 		)
 		(property "Value" "10uF"
-			(at 73.66 125.73 0)
+			(at 77.47 125.73 0)
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -12626,7 +13200,7 @@
 			)
 		)
 		(property "Footprint" "JLCPCB-Kicad-Footprints:C_0805"
-			(at 69.342 125.73 90)
+			(at 73.152 125.73 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12635,7 +13209,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.lcsc.com/datasheet/lcsc_datasheet_2411041759_Murata-Electronics-GRM21BR61H106KE43L_C440198.pdf"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12644,7 +13218,7 @@
 			)
 		)
 		(property "Description" "50V 10uF X5R ±10% 0805 Multilayer Ceramic Capacitors MLCC - SMD/SMT ROHS"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12653,7 +13227,7 @@
 			)
 		)
 		(property "LCSC" "C440198"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12662,7 +13236,7 @@
 			)
 		)
 		(property "Stock" "842040"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12671,7 +13245,7 @@
 			)
 		)
 		(property "Price" "0.061USD"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12680,7 +13254,7 @@
 			)
 		)
 		(property "Process" "SMT"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12689,7 +13263,7 @@
 			)
 		)
 		(property "Minimum Qty" "5"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12698,7 +13272,7 @@
 			)
 		)
 		(property "Attrition Qty" "4"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12707,7 +13281,7 @@
 			)
 		)
 		(property "Class" "Basic Component"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12716,7 +13290,7 @@
 			)
 		)
 		(property "Category" "Capacitors,Multilayer Ceramic Capacitors MLCC - SMD/SMT"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12725,7 +13299,7 @@
 			)
 		)
 		(property "Manufacturer" "Murata Electronics"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12734,7 +13308,7 @@
 			)
 		)
 		(property "Part" "GRM21BR61H106KE43L"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12743,7 +13317,7 @@
 			)
 		)
 		(property "Voltage Rated" "50V"
-			(at 73.66 128.27 0)
+			(at 77.47 128.27 0)
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -12752,7 +13326,7 @@
 			)
 		)
 		(property "Tolerance" "±10%"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12761,7 +13335,7 @@
 			)
 		)
 		(property "Capacitance" "10uF"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -12770,7 +13344,7 @@
 			)
 		)
 		(property "Temperature Coefficient" "X5R"
-			(at 71.12 125.73 0)
+			(at 74.93 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13492,7 +14066,7 @@
 	)
 	(symbol
 		(lib_id "JLCPCB-Capacitors:Plugin,D10xL16mm,470uF")
-		(at 62.23 125.73 0)
+		(at 66.04 125.73 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -13501,7 +14075,7 @@
 		(fields_autoplaced yes)
 		(uuid "e97b8776-f5b6-4b00-b9dd-ca1fccd4ae69")
 		(property "Reference" "C4"
-			(at 64.77 122.7454 0)
+			(at 68.58 122.7454 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13510,7 +14084,7 @@
 			)
 		)
 		(property "Value" "470uF"
-			(at 64.77 125.2855 0)
+			(at 68.58 125.2855 0)
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -13519,7 +14093,7 @@
 			)
 		)
 		(property "Footprint" "JLCPCB-Kicad-Footprints:C_Plugin,D10xL16mm"
-			(at 60.452 125.73 90)
+			(at 64.262 125.73 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13528,7 +14102,7 @@
 			)
 		)
 		(property "Datasheet" "https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/2205131445_Man-Yue-Tech-EGT477M1HG16RRS0P_C3015599.pdf"
-			(at 62.23 125.73 0)
+			(at 66.04 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13537,7 +14111,7 @@
 			)
 		)
 		(property "Description" "470uF 50V ±20% Plugin,D10xL16mm Aluminum Electrolytic Capacitors - Leaded ROHS"
-			(at 62.23 125.73 0)
+			(at 66.04 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13546,7 +14120,7 @@
 			)
 		)
 		(property "LCSC" "C3015599"
-			(at 62.23 125.73 0)
+			(at 66.04 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13555,7 +14129,7 @@
 			)
 		)
 		(property "Stock" "3379"
-			(at 62.23 125.73 0)
+			(at 66.04 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13564,7 +14138,7 @@
 			)
 		)
 		(property "Price" "0.170USD"
-			(at 62.23 125.73 0)
+			(at 66.04 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13573,7 +14147,7 @@
 			)
 		)
 		(property "Process" "Hand-Soldered"
-			(at 62.23 125.73 0)
+			(at 66.04 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13582,7 +14156,7 @@
 			)
 		)
 		(property "Minimum Qty" "2"
-			(at 62.23 125.73 0)
+			(at 66.04 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13591,7 +14165,7 @@
 			)
 		)
 		(property "Attrition Qty" "0"
-			(at 62.23 125.73 0)
+			(at 66.04 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13600,7 +14174,7 @@
 			)
 		)
 		(property "Class" "Preferred Component"
-			(at 62.23 125.73 0)
+			(at 66.04 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13609,7 +14183,7 @@
 			)
 		)
 		(property "Category" "Capacitors,Aluminum Electrolytic Capacitors - Leaded"
-			(at 62.23 125.73 0)
+			(at 66.04 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13618,7 +14192,7 @@
 			)
 		)
 		(property "Manufacturer" "Man Yue Tech"
-			(at 62.23 125.73 0)
+			(at 66.04 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13627,7 +14201,7 @@
 			)
 		)
 		(property "Part" "EGT477M1HG16RRS0P"
-			(at 62.23 125.73 0)
+			(at 66.04 125.73 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -13636,7 +14210,7 @@
 			)
 		)
 		(property "Voltage Rated" "50V"
-			(at 64.77 127.8255 0)
+			(at 68.58 127.8255 0)
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -14053,7 +14627,7 @@
 	)
 	(symbol
 		(lib_id "JLCPCB-Inductors:22uH,4.95A")
-		(at 128.27 120.65 90)
+		(at 130.81 120.65 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -14062,7 +14636,7 @@
 		(fields_autoplaced yes)
 		(uuid "f642beea-f56a-45e0-8a7b-8bb73201f50e")
 		(property "Reference" "L1"
-			(at 128.27 115.57 90)
+			(at 130.81 115.57 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14070,7 +14644,7 @@
 			)
 		)
 		(property "Value" "22uH,4.95A"
-			(at 128.27 118.11 90)
+			(at 130.81 118.11 90)
 			(effects
 				(font
 					(size 0.8 0.8)
@@ -14078,7 +14652,7 @@
 			)
 		)
 		(property "Footprint" "JLCPCB-Kicad-Footprints:L_SMD,12.5x12.5mm"
-			(at 128.27 122.428 90)
+			(at 130.81 122.428 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14087,7 +14661,7 @@
 			)
 		)
 		(property "Datasheet" "https://wmsc.lcsc.com/wmsc/upload/file/pdf/v2/lcsc/2111241930_SXN-Shun-Xiang-Nuo-Elec-SMDRI129-220MT_C2924827.pdf"
-			(at 128.27 120.65 0)
+			(at 130.81 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14096,7 +14670,7 @@
 			)
 		)
 		(property "Description" "4.95A 22uH Shielded inductor ±20% 5.12A SMD,12.5x12.5mm Power Inductors ROHS"
-			(at 128.27 120.65 0)
+			(at 130.81 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14105,7 +14679,7 @@
 			)
 		)
 		(property "LCSC" "C2924827"
-			(at 128.27 120.65 0)
+			(at 130.81 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14114,7 +14688,7 @@
 			)
 		)
 		(property "Stock" "174"
-			(at 128.27 120.65 0)
+			(at 130.81 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14123,7 +14697,7 @@
 			)
 		)
 		(property "Price" "0.276USD"
-			(at 128.27 120.65 0)
+			(at 130.81 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14132,7 +14706,7 @@
 			)
 		)
 		(property "Process" "SMT"
-			(at 128.27 120.65 0)
+			(at 130.81 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14141,7 +14715,7 @@
 			)
 		)
 		(property "Minimum Qty" "2"
-			(at 128.27 120.65 0)
+			(at 130.81 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14150,7 +14724,7 @@
 			)
 		)
 		(property "Attrition Qty" "0"
-			(at 128.27 120.65 0)
+			(at 130.81 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14159,7 +14733,7 @@
 			)
 		)
 		(property "Class" "Preferred Component"
-			(at 128.27 120.65 0)
+			(at 130.81 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14168,7 +14742,7 @@
 			)
 		)
 		(property "Category" "Inductors/Coils/Transformers,Power Inductors"
-			(at 128.27 120.65 0)
+			(at 130.81 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14177,7 +14751,7 @@
 			)
 		)
 		(property "Manufacturer" "SXN(Shun Xiang Nuo Elec)"
-			(at 128.27 120.65 0)
+			(at 130.81 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -14186,7 +14760,7 @@
 			)
 		)
 		(property "Part" "SMDRI129-220MT"
-			(at 128.27 120.65 0)
+			(at 130.81 120.65 0)
 			(effects
 				(font
 					(size 1.27 1.27)
