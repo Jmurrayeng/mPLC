@@ -1,4 +1,5 @@
 #include <AccelStepper.h>
+#include <math.h>
 
 // Pin definitions
 const int MOTOR_A_STEP_PIN = 11;
@@ -7,97 +8,155 @@ const int MOTOR_B_STEP_PIN = 13;
 const int MOTOR_B_DIR_PIN = 14;
 const int Z_SOLENOID_PIN = 15; // Solenoid valve for pneumatic cylinder
 const int SPINDLE_PIN = 16;
-
-// Limit switch pins
-const int X_LIMIT_PIN = 1;
-const int Y_LIMIT_PIN = 2;
+const int X_LIMIT_PIN = 2;
+const int Y_LIMIT_PIN = 3;
 
 // Motion parameters
-float currentX = 0.0, currentY = 0.0;  // Current position in mm
-bool zCylinderExtended = false;       // Z-axis state (true = extended, false = retracted)
-float stepsPerMM = 158.0; // Adjust this based on your hardware (steps/mm)
-float feedRate = 10.0;              // Default feed rate in steps/sec
+float currentX = 0.0, currentY = 0.0, currentZ =0.0, currentSpindle = 0.0;  // Current position in mm
+float stepsPerMM = 158.0;             // Adjust this based on your hardware (steps/mm)
+float feedRate = 1000.0;                // Default feed rate in steps/sec
+float accel = 600.0;                    //default accel
+float G0Speed = 5000;                  //default speed for G0
 bool isHomed = false;                 // Homing state
 
-
-
-
+//structures
+struct motorSteps{
+  long stepsA;
+  long stepsB;
+  float speedA;
+  float speedB;
+  float accelA;
+  float accelB;
+};
 
 
 // Create AccelStepper objects for motors A and B
 AccelStepper motorA(AccelStepper::DRIVER, MOTOR_A_STEP_PIN, MOTOR_A_DIR_PIN);
 AccelStepper motorB(AccelStepper::DRIVER, MOTOR_B_STEP_PIN, MOTOR_B_DIR_PIN);
 
-
-
-
-
-
 // Check limit switches and return true if all limits are OK
 bool checkLimitSwitches() {
-  if (digitalRead(X_LIMIT_PIN) == LOW || digitalRead(Y_LIMIT_PIN) == LOW) {
+  if (digitalRead(X_LIMIT_PIN) == HIGH || digitalRead(Y_LIMIT_PIN) == HIGH) {
     Serial.println("Limit switch triggered! Motion aborted.");
+    motorA.stop();
+    motorB.stop();
     return false;
   }
   return true;
 }
 
+//get steps required based on motor configuration
+motorSteps getMotorSteps(float x, float y){
+  motorSteps returnValue;
+  float dX = x - currentX;
+  float dY = y - currentY;
+  float stepsA = (dX+dY) * stepsPerMM;
+  float stepsB = (dX-dY) * stepsPerMM;
+  float maxSteps = max(abs(stepsA), abs(stepsB));
+  float modifierA = (abs(stepsA)/maxSteps);
+  float modifierB = (abs(stepsB)/maxSteps);
+  
+
+  returnValue.speedA = modifierA * (feedRate * stepsPerMM) / 60.0;
+  returnValue.speedB = modifierB * (feedRate * stepsPerMM) / 60.0;
+  returnValue.accelA = modifierA * accel;
+  returnValue.accelB = modifierB * accel;
+  returnValue.stepsA = long(stepsA);
+  returnValue.stepsB = long(stepsB);
+  return returnValue;
+}
 
 
+// Non-interpolated rapid move (G0)
+bool rapidMove(float targetX, float targetY) {
 
+  motorSteps movementData = getMotorSteps(targetX,targetY);
+  
+  motorA.move(movementData.stepsA);
+  motorB.move(movementData.stepsB);
 
+  motorA.setMaxSpeed(G0Speed);
+  motorB.setMaxSpeed(G0Speed);
 
-// Simplified moveHBot function using AccelStepper
-bool moveHBot(float deltaX, float deltaY) {
-  Serial.println("Moving...");
+  motorA.setAcceleration(accel);
+  motorB.setAcceleration(accel);
 
-  // Calculate target steps for each motor
-  int stepsA = (deltaX + deltaY) * stepsPerMM;
-  int stepsB = (deltaX - deltaY) * stepsPerMM;
-  // Set target positions for the motors
-  motorA.move(stepsA);
-  motorB.move(stepsB);
-
-  // Start motion
   while (motorA.isRunning() || motorB.isRunning()) {
     if (!checkLimitSwitches()) {
-      motorA.stop(); // Stop motor A
-      motorB.stop(); // Stop motor B
-      return false;  // Abort motion
+      return false;
     }
     motorA.run();
     motorB.run();
   }
 
-  // Update current position
-  currentX += deltaX;
-  currentY += deltaY;
-
+  currentX = targetX;
+  currentY = targetY;
   return true;
 }
 
+// Interpolated linear move (G1)
+bool linearMove(float targetX, float targetY) {
 
+  motorSteps movementData = getMotorSteps(targetX,targetY);
 
+  motorA.move(movementData.stepsA);
+  motorB.move(movementData.stepsB);
 
+  motorA.setMaxSpeed(movementData.speedA);
+  motorB.setMaxSpeed(movementData.speedB);
 
+  motorA.setAcceleration(movementData.accelA);
+  motorB.setAcceleration(movementData.accelB);
 
-// Control pneumatic cylinder for Z-axis
-void controlZCylinder(bool extend) {
-  zCylinderExtended = extend;
-  digitalWrite(Z_SOLENOID_PIN, extend ? HIGH : LOW);
+  while (motorA.isRunning() || motorB.isRunning()) {
+    if (!checkLimitSwitches()) {
+      return false;
+    }
+    motorA.run();
+    motorB.run();
+  }
+
+  currentX = targetX;
+  currentY = targetY;
+  return true;
 }
 
+// Circular/arc move (G2/G3)
+bool arcMove(float targetX, float targetY, float centerX, float centerY, bool clockwise) {
+  float radius = sqrt(pow(centerX - currentX, 2) + pow(centerY - currentY, 2));
+  float startAngle = atan2(currentY - centerY, currentX - centerX);
+  float endAngle = atan2(targetY - centerY, targetX - centerX);
 
+  if (clockwise && endAngle > startAngle) endAngle -= 2 * PI;
+  if (!clockwise && endAngle < startAngle) endAngle += 2 * PI;
 
+  int segments = max(10, int(radius * abs(endAngle - startAngle) * 10));
+  for (int i = 1; i <= segments; i++) {
+    float angle = startAngle + (endAngle - startAngle) * i / segments;
+    float nextX = centerX + radius * cos(angle);
+    float nextY = centerY + radius * sin(angle);
+    if (!linearMove(nextX, nextY)) return false;
+  }
+  return true;
+}
 
-
+// Control pneumatic cylinder for Z-axis
+bool zMove(float targetZ) {
+  if (targetZ > 0){
+    digitalWrite(Z_SOLENOID_PIN, HIGH);
+  }else{
+    digitalWrite(Z_SOLENOID_PIN, LOW);
+  }
+  //check if extended here
+  currentZ = targetZ;
+  return true;
+}
 
 // Perform homing (G28)
 void homeAxes() {
   Serial.println("Homing axes...");
-
-  // Move motors towards limit switches
-  motorA.setSpeed(-100); // Move towards home
+  zMove(false);
+  motorA.setSpeed(-100);
   motorB.setSpeed(-100);
 
   while (digitalRead(X_LIMIT_PIN) == HIGH || digitalRead(Y_LIMIT_PIN) == HIGH) {
@@ -107,104 +166,99 @@ void homeAxes() {
 
   motorA.stop();
   motorB.stop();
-
-  // Retract Z-axis to a known state
-  controlZCylinder(false);
-
-  // Reset positions
   currentX = 0.0;
   currentY = 0.0;
-
   isHomed = true;
   Serial.println("Homing complete.");
 }
 
-
-
-
-
-
 // Parse G-code
 void parseGCode(String gcode) {
   gcode.trim();
-
   if (gcode.startsWith("G")) {
     int command = gcode.substring(1, gcode.indexOf(' ')).toInt();
+    float targetX = currentX, targetY = currentY, targetZ = currentZ, centerX, centerY;
+    if (gcode.indexOf('X') != -1) targetX = gcode.substring(gcode.indexOf('X') + 1).toFloat();
+    if (gcode.indexOf('Y') != -1) targetY = gcode.substring(gcode.indexOf('Y') + 1).toFloat();
+    if (gcode.indexOf('Z') != -1) targetZ = gcode.substring(gcode.indexOf('Z') + 1).toFloat();
+    if (gcode.indexOf('I') != -1) centerX = currentX + gcode.substring(gcode.indexOf('I') + 1).toFloat();
+    if (gcode.indexOf('J') != -1) centerY = currentY + gcode.substring(gcode.indexOf('J') + 1).toFloat();
 
-    if (command == 0 || command == 1) {  // G0 or G1
-      if (!isHomed) {
-        Serial.println("Error: Machine not homed. Use G28 to home axes.");
-        return;
-      }
+    zMove(targetZ);
 
-      float newX = currentX, newY = currentY;
-      bool newZState = zCylinderExtended;  // Keep current state by default
-
-      if (gcode.indexOf('X') != -1) newX = gcode.substring(gcode.indexOf('X') + 1).toFloat();
-      if (gcode.indexOf('Y') != -1) newY = gcode.substring(gcode.indexOf('Y') + 1).toFloat();
-      if (gcode.indexOf('Z') != -1) {
-        float zValue = gcode.substring(gcode.indexOf('Z') + 1).toFloat();
-        newZState = (zValue > 0);  // Positive Z = extend, negative/zero Z = retract
-      }
-      if (newZState != zCylinderExtended) {
-          controlZCylinder(newZState);
-          Serial.println(newZState ? "Z-axis: Cylinder extended." : "Z-axis: Cylinder retracted.");
-        }
-      // Attempt the move
-      if (moveHBot(newX - currentX, newY - currentY)) {
-        Serial.print("Movement complete. New position: X=");
-        Serial.print(currentX);
-        Serial.print(", Y=");
-        Serial.println(currentY);
-      } else {
-        Serial.println("Error: Motion aborted due to limit switch.");
-      }
-    } else if (command == 28) {  // G28
+    if (command == 0) {
+      Serial.println("Performing rapid (G0) move...");
+      rapidMove(targetX, targetY);
+      Serial.println("ok");
+    } else if (command == 1) {
+      Serial.println("Performing linear (G1) move...");
+      linearMove(targetX, targetY);
+      Serial.println("ok");
+    } else if (command == 2 || command == 3) {
+      Serial.println("error: Unsupported command");
+      //Serial.println(command == 2 ? "Performing circular (G2) move..." : "Performing circular (G3) move...");
+      //arcMove(targetX, targetY, centerX, centerY, command == 2);
+      Serial.println("ok");
+    } else if (command == 28) {
       homeAxes();
+      Serial.println("ok");
     } else {
-      Serial.println("Error: Unknown G-code command: " + String(command));
+      Serial.println("error: Unsupported command");
     }
-  } else if (gcode.startsWith("F")) {  // Feed rate
-    float newFeedRate = gcode.substring(1).toFloat();
-    if (newFeedRate > 0) {
-      feedRate = newFeedRate;
-      motorA.setMaxSpeed(feedRate / 60.0 * stepsPerMM); // Convert mm/min to steps/sec
-      motorB.setMaxSpeed(feedRate / 60.0 * stepsPerMM);
-      Serial.println("Feed rate set to " + String(feedRate) + " mm/min.");
-    } else {
-      Serial.println("Error: Invalid feed rate.");
-    }
-  } else {
-    Serial.println("Error: Invalid command.");
+    Serial.print("Postion: X: ");
+    Serial.print(currentX);
+    Serial.print(" Y: ");
+    Serial.print(currentY);
+    Serial.println(". Stopped");
+    Serial.println("ok");
+  } else if (gcode.startsWith("F")) {
+    feedRate = gcode.substring(1).toFloat();
+    Serial.println("Feed rate set to " + String(feedRate) + " mm/min.");
+    Serial.println("ok");
+  }else if (gcode.startsWith("?")){
+    Serial.print("<");
+    Serial.print("Idle");
+    Serial.print("|MPos:");
+    Serial.print(currentX);
+    Serial.print(",");
+    Serial.print(currentY);
+    Serial.print(",");
+    Serial.print(currentZ);
+    Serial.print("|FS:");
+    Serial.print(feedRate);
+    Serial.print(",");
+    Serial.print(currentSpindle);
+    Serial.println(">");
+    Serial.println("ok");
+  }else if(gcode.startsWith("$")) {
+      char command = gcode[1];
+      if (command == 'I') {
+        Serial.println("mCNC");
+        Serial.println("ok");
+      }else{
+        Serial.println("error: Unsupported command");
+      }
+  }else{
+    Serial.println("error: Unsupported command");
   }
 }
 
-
-
-
-
-
 void setup() {
-  // Initialize pins
   pinMode(Z_SOLENOID_PIN, OUTPUT);
-  pinMode(SPINDLE_PIN, OUTPUT);
-
   pinMode(X_LIMIT_PIN, INPUT_PULLUP);
   pinMode(Y_LIMIT_PIN, INPUT_PULLUP);
-
-  // Initialize serial communication
   Serial.begin(115200);
-  Serial.println("H-Bot G-code Interpreter Ready");
-
-  // Initialize motors
-  motorA.setMaxSpeed(2000); // Set max speed (steps/second)
-  motorB.setMaxSpeed(2000); 
-  motorA.setAcceleration(500); // Set acceleration (steps/second^2)
-  motorB.setAcceleration(500);
+  motorA.setMaxSpeed(G0Speed);
+  motorB.setMaxSpeed(G0Speed);
+  motorA.setAcceleration(accel);
+  motorB.setAcceleration(accel);
+  while (!Serial){
+    //wait
+  }
+  Serial.println("ok");
 }
 
 void loop() {
-  // Check for incoming serial data
   if (Serial.available()) {
     String gcode = Serial.readStringUntil('\n');
     parseGCode(gcode);
