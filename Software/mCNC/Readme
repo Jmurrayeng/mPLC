@@ -1,3 +1,5 @@
 minimally viable cnc drilling machine
 
-uses two stepper motors (with external drivers) in a Hbot motor configuration. Z and spindle are on/off only
+uses two stepper motors (with external drivers) in a Hbot/corexy motor configuration. Z and spindle are on/off only
+
+used as proof of concept, for a real device grblHAL can be used with a modified pinout (create my_machine_map.h)
