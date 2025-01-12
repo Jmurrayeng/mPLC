@@ -36,7 +36,7 @@ AccelStepper motorB(AccelStepper::DRIVER, MOTOR_B_STEP_PIN, MOTOR_B_DIR_PIN);
 
 // Check limit switches and return true if all limits are OK
 bool checkLimitSwitches() {
-  if (digitalRead(X_LIMIT_PIN) == HIGH || digitalRead(Y_LIMIT_PIN) == HIGH) {
+  if (digitalRead(X_LIMIT_PIN) == LOW || digitalRead(Y_LIMIT_PIN) == LOW) {
     Serial.println("Limit switch triggered! Motion aborted.");
     motorA.stop();
     motorB.stop();
@@ -121,24 +121,6 @@ bool linearMove(float targetX, float targetY) {
   return true;
 }
 
-// Circular/arc move (G2/G3)
-bool arcMove(float targetX, float targetY, float centerX, float centerY, bool clockwise) {
-  float radius = sqrt(pow(centerX - currentX, 2) + pow(centerY - currentY, 2));
-  float startAngle = atan2(currentY - centerY, currentX - centerX);
-  float endAngle = atan2(targetY - centerY, targetX - centerX);
-
-  if (clockwise && endAngle > startAngle) endAngle -= 2 * PI;
-  if (!clockwise && endAngle < startAngle) endAngle += 2 * PI;
-
-  int segments = max(10, int(radius * abs(endAngle - startAngle) * 10));
-  for (int i = 1; i <= segments; i++) {
-    float angle = startAngle + (endAngle - startAngle) * i / segments;
-    float nextX = centerX + radius * cos(angle);
-    float nextY = centerY + radius * sin(angle);
-    if (!linearMove(nextX, nextY)) return false;
-  }
-  return true;
-}
 
 // Control pneumatic cylinder for Z-axis
 bool zMove(float targetZ) {
@@ -181,8 +163,6 @@ void parseGCode(String gcode) {
     if (gcode.indexOf('X') != -1) targetX = gcode.substring(gcode.indexOf('X') + 1).toFloat();
     if (gcode.indexOf('Y') != -1) targetY = gcode.substring(gcode.indexOf('Y') + 1).toFloat();
     if (gcode.indexOf('Z') != -1) targetZ = gcode.substring(gcode.indexOf('Z') + 1).toFloat();
-    if (gcode.indexOf('I') != -1) centerX = currentX + gcode.substring(gcode.indexOf('I') + 1).toFloat();
-    if (gcode.indexOf('J') != -1) centerY = currentY + gcode.substring(gcode.indexOf('J') + 1).toFloat();
 
     zMove(targetZ);
 
@@ -193,11 +173,6 @@ void parseGCode(String gcode) {
     } else if (command == 1) {
       Serial.println("Performing linear (G1) move...");
       linearMove(targetX, targetY);
-      Serial.println("ok");
-    } else if (command == 2 || command == 3) {
-      Serial.println("error: Unsupported command");
-      //Serial.println(command == 2 ? "Performing circular (G2) move..." : "Performing circular (G3) move...");
-      //arcMove(targetX, targetY, centerX, centerY, command == 2);
       Serial.println("ok");
     } else if (command == 28) {
       homeAxes();
