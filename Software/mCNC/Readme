@@ -1,4 +1,4 @@
-minimally viable cnc drilling machine
+minimally viable cnc drilling machine software
 
 uses two stepper motors (with external drivers) in a Hbot/corexy motor configuration. Z and spindle are on/off only
 
